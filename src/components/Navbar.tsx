@@ -122,7 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="navbar-account-btn"
               onClick={onOpenAccount}
-              className="p-2 rounded-full text-[#222] hover:text-[#9E7422] hover:bg-[#F2ECE0] transition-colors"
+              className="hidden sm:flex p-2 rounded-full text-[#222] hover:text-[#9E7422] hover:bg-[#F2ECE0] transition-colors"
               aria-label="Customer account"
               title="My Account & Orders"
             >
@@ -133,7 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="navbar-admin-btn"
               onClick={() => handleLinkClick('admin')}
-              className="p-2 rounded-full text-[#9E7422] hover:text-[#735111] hover:bg-[#F2ECE0] transition-colors"
+              className="hidden sm:flex p-2 rounded-full text-[#9E7422] hover:text-[#735111] hover:bg-[#F2ECE0] transition-colors"
               aria-label="Store Admin Management"
               title="Admin Dashboard"
             >

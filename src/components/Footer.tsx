@@ -205,15 +205,15 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Bottom Sub-footer */}
-        <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-[#7A7265]">
+        <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 text-[11px] text-[#7A7265] text-center md:text-left">
           <div>
             © 2026 RIDHAL VENTURES. All rights reserved.
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
             <span>Modest Fashion</span>
-            <span>•</span>
+            <span className="text-[#4D4539]">•</span>
             <span>Islamic Essentials</span>
-            <span>•</span>
+            <span className="text-[#4D4539]">•</span>
             <span>Timeless Accessories</span>
           </div>
         </div>

@@ -98,16 +98,18 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         </div>
 
         {/* Quick Categories Bar */}
-        <div className="px-5 py-3 bg-[#F4EFE6] border-b border-[#E8DFC8] flex items-center gap-2 overflow-x-auto text-xs">
+        <div className="px-4 sm:px-5 py-3 bg-[#F4EFE6] border-b border-[#E8DFC8] flex items-center gap-2 overflow-x-auto text-xs">
           <span className="text-gray-500 font-medium whitespace-nowrap">Popular:</span>
           {quickCategories.map((cat) => (
             <button
               key={cat}
               onClick={() => {
-                onSelectCategory(cat);
+                if (onSelectCategory) {
+                  onSelectCategory(cat);
+                }
                 onClose();
               }}
-              className="px-2.5 py-1 rounded-full bg-white text-[#2C2416] hover:bg-[#C59A45] hover:text-white transition-colors border border-[#DDD3BF] whitespace-nowrap font-medium"
+              className="px-2.5 py-1 rounded-full bg-white text-[#2C2416] hover:bg-[#C59A45] hover:text-white transition-colors border border-[#DDD3BF] whitespace-nowrap font-medium cursor-pointer"
             >
               {cat}
             </button>

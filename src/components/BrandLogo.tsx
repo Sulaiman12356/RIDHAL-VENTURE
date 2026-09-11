@@ -13,18 +13,18 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   variant = 'compact',
   theme = 'light'
 }) => {
-  // Dimension settings
+  // Dimension settings - responsive across mobile, tablet, and desktop
   const circleSizes = {
-    sm: 'w-10 h-10',
-    md: 'w-14 h-14',
-    lg: 'w-20 h-20',
-    xl: 'w-28 h-28'
+    sm: 'w-8 h-8 sm:w-10 sm:h-10',
+    md: 'w-9 h-9 sm:w-12 sm:h-12 md:w-14 md:h-14',
+    lg: 'w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20',
+    xl: 'w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28'
   };
 
   const isDark = theme === 'dark';
 
   return (
-    <div className={`inline-flex items-center gap-3 select-none ${className}`}>
+    <div className={`inline-flex items-center gap-2 sm:gap-3 select-none ${className}`}>
       {/* Official Circular Seal Replica matching Ridah venture.jpeg */}
       <div className={`relative flex-shrink-0 ${circleSizes[size]} aspect-square rounded-full shadow-sm`}>
         <svg
@@ -246,24 +246,24 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       {/* Typography Extension for Horizontal Navbar & Brand lockups */}
       {variant !== 'circular-only' && (
         <div className="flex flex-col text-left">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1 sm:gap-1.5">
             <span
-              className={`font-display-royal tracking-[0.14em] font-extrabold uppercase transition-colors ${
-                size === 'sm' ? 'text-base' : size === 'lg' ? 'text-2xl' : 'text-lg md:text-xl'
+              className={`font-display-royal tracking-[0.12em] sm:tracking-[0.14em] font-extrabold uppercase transition-colors ${
+                size === 'sm' ? 'text-sm sm:text-base' : size === 'lg' ? 'text-xl sm:text-2xl' : 'text-sm sm:text-base md:text-xl'
               } ${isDark ? 'text-white' : 'text-[#121212]'}`}
             >
               RIDHAL
             </span>
             <span
-              className={`font-display-royal tracking-[0.2em] font-semibold transition-colors ${
-                size === 'sm' ? 'text-xs' : size === 'lg' ? 'text-base' : 'text-xs md:text-sm'
+              className={`font-display-royal tracking-[0.16em] sm:tracking-[0.2em] font-semibold transition-colors ${
+                size === 'sm' ? 'text-[11px] sm:text-xs' : size === 'lg' ? 'text-sm sm:text-base' : 'text-[11px] sm:text-xs md:text-sm'
               } text-[#C59A45]`}
             >
               VENTURES
             </span>
           </div>
           <span
-            className={`font-serif-luxury italic tracking-wide text-[10px] md:text-xs leading-none transition-colors ${
+            className={`font-serif-luxury italic tracking-wide text-[9px] sm:text-[10px] md:text-xs leading-none transition-colors truncate max-w-[130px] sm:max-w-none ${
               isDark ? 'text-[#D1C7B7]' : 'text-[#665D52]'
             }`}
           >

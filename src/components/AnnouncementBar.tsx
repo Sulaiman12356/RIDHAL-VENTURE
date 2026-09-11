@@ -12,10 +12,10 @@ export const AnnouncementBar: React.FC = () => {
         </div>
 
         {/* Center main announcement */}
-        <div className="w-full md:w-auto text-center font-medium tracking-wide flex items-center justify-center gap-2">
-          <span className="text-[#C59A45] text-xs">✦</span>
-          <span>Style for Every Occasion | Ijebu-Ode, Ogun State</span>
-          <span className="text-[#C59A45] text-xs">✦</span>
+        <div className="w-full md:w-auto text-center font-medium tracking-wide flex items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
+          <span className="text-[#C59A45] text-[10px] sm:text-xs flex-shrink-0">✦</span>
+          <span className="truncate max-w-[260px] sm:max-w-none">Style for Every Occasion • Ijebu-Ode, Ogun State</span>
+          <span className="text-[#C59A45] text-[10px] sm:text-xs flex-shrink-0">✦</span>
         </div>
 
         {/* Right direct hotline */}

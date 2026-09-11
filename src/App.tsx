@@ -181,6 +181,7 @@ function MainAppContent() {
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         onSelectProduct={handleSelectProduct}
+        onSelectCategory={handleSelectCategoryFromHomeOrColl}
         products={storeProducts}
       />
 

@@ -79,7 +79,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
 
               {/* Modest Fashion / Timeless Elegance tag */}
-              <div className="pt-4 flex items-center justify-center lg:justify-start gap-3 text-xs tracking-wider uppercase text-[#8C6316] font-semibold">
+              <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-3 text-[11px] sm:text-xs tracking-wider uppercase text-[#8C6316] font-semibold">
                 <span>Modest Fashion</span>
                 <span className="text-[#C59A45]">•</span>
                 <span>Islamic Essentials</span>
