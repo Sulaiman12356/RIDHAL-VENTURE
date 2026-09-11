@@ -1,0 +1,122 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Store inventory items available for sale",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique product ID" },
+        "name": { "type": "string", "description": "Product title" },
+        "slug": { "type": "string", "description": "URL-friendly slug" },
+        "category": { "type": "string", "description": "Primary department" },
+        "subcategory": { "type": "string", "description": "Sub-classification" },
+        "description": { "type": "string", "description": "Full product description" },
+        "shortDescription": { "type": "string", "description": "Brief summary" },
+        "price": { "type": "number", "description": "Selling price in Naira" },
+        "compareAtPrice": { "type": "number", "description": "Original crossed-out price" },
+        "images": { "type": "array", "description": "Array of image URLs" },
+        "sizes": { "type": "array", "description": "Available clothing or shoe sizes" },
+        "colors": { "type": "array", "description": "Available color variants" },
+        "stock": { "type": "number", "description": "Units available in stock" },
+        "featured": { "type": "boolean", "description": "Whether displayed on homepage" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of creation" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp of last update" }
+      },
+      "required": ["id", "name", "slug", "category", "price", "stock"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Store product classification departments",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique category identifier" },
+        "name": { "type": "string", "description": "Category display name" },
+        "slug": { "type": "string", "description": "URL slug" },
+        "description": { "type": "string", "description": "Department description" },
+        "image": { "type": "string", "description": "Cover banner image URL" }
+      },
+      "required": ["id", "name", "slug"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer purchase transaction record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Invoice order ID, e.g. RV-2026-XXXX" },
+        "customerId": { "type": "string", "description": "Associated customer ID or guest ID" },
+        "customerDetails": { "type": "object", "description": "Name, email, phone, and delivery address" },
+        "items": { "type": "array", "description": "Line items with price, quantity, size, and color" },
+        "subtotal": { "type": "number", "description": "Items sum in Naira" },
+        "deliveryFee": { "type": "number", "description": "State shipping cost in Naira" },
+        "total": { "type": "number", "description": "Grand total in Naira" },
+        "paymentMethod": { "type": "string", "description": "Bank Transfer, Online Card, or Delivery" },
+        "paymentStatus": { "type": "string", "description": "Pending, Paid, or Failed" },
+        "orderStatus": { "type": "string", "description": "Pending, Processing, Shipped, Delivered, Cancelled" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of order placement" }
+      },
+      "required": ["id", "customerDetails", "items", "total", "orderStatus", "paymentStatus"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Store buyer account or registered contact record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Customer UID or phone/email key" },
+        "name": { "type": "string", "description": "Customer full name" },
+        "email": { "type": "string", "description": "Email address" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "addresses": { "type": "array", "description": "Saved shipping addresses" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of creation" }
+      },
+      "required": ["id", "name", "phone"]
+    },
+    "Wishlist": {
+      "title": "Wishlist",
+      "description": "Customer saved product favorites",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Customer ID or wishlist ID" },
+        "customerId": { "type": "string", "description": "Associated customer identifier" },
+        "productIds": { "type": "array", "description": "List of saved product IDs" }
+      },
+      "required": ["id", "customerId", "productIds"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Authorized administrative user for store management",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Admin UID" },
+        "email": { "type": "string", "description": "Admin email" },
+        "role": { "type": "string", "description": "Administrator permission level" }
+      },
+      "required": ["id", "email", "role"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Store inventory products catalog"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Store product classification departments"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer sales orders"
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Registered buyer accounts"
+    },
+    "/wishlist/{wishlistId}": {
+      "schema": "Wishlist",
+      "description": "Saved customer wishlists"
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Store managers and administrative credentials"
+    }
+  }
+}

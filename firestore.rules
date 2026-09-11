@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global safety helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'alhajabizventure@gmail.com' ||
+        request.auth.token.email == 'ipesolasulaiman@gmail.com' ||
+        request.auth.token.email == 'admin@ridhalventures.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Products:
+    // Public can read product catalog.
+    // ONLY authenticated authorized admins can create, update, or delete products.
+    // Customers MUST NOT be able to modify product prices or catalog inventory.
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Categories:
+    // Public can read categories.
+    // ONLY authenticated authorized admins can create, update, or delete categories.
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Orders:
+    // Public can read orders for instant invoice and tracking lookups.
+    // Customers can place orders, but paymentStatus MUST start as 'Pending' or 'Pending Payment'.
+    // Customers MUST NOT be able to modify order payment statuses or mark orders as paid.
+    // ONLY authenticated authorized admins can update paymentStatus or orderStatus, or delete orders.
+    match /orders/{orderId} {
+      allow read: if true;
+      allow create: if (
+        request.resource.data.paymentStatus == 'Pending' || 
+        request.resource.data.paymentStatus == 'Pending Payment'
+      ) && (
+        !request.resource.data.keys().hasAny(['orderStatus']) ||
+        request.resource.data.orderStatus == 'Pending'
+      );
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Customers:
+    // Store checkout can register customer details.
+    // Sensitive lookups restricted to admin and owner.
+    match /customers/{customerId} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == customerId);
+      allow create, update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // Wishlists:
+    match /wishlist/{wishlistId} {
+      allow read, write: if true;
+    }
+
+    // Admins registry:
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}
+

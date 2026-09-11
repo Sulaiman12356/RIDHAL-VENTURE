@@ -1,0 +1,6 @@
+{
+  "name": "RIDHAL VENTURES",
+  "description": "Your one stop store for Jalab, Abaya, Islamic essentials, modest fashion, accessories, and lifestyle products in Ijebu-Ode, Ogun State, Nigeria.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
