@@ -50,7 +50,8 @@ service cloud.firestore {
         request.resource.data.paymentStatus == 'Pending Payment'
       ) && (
         !request.resource.data.keys().hasAny(['orderStatus']) ||
-        request.resource.data.orderStatus == 'Pending'
+        request.resource.data.orderStatus == 'Pending' ||
+        request.resource.data.orderStatus == 'Order received'
       );
       allow update: if isAdmin();
       allow delete: if isAdmin();
@@ -63,6 +64,31 @@ service cloud.firestore {
       allow read: if isAdmin() || (isSignedIn() && request.auth.uid == customerId);
       allow create, update: if true;
       allow delete: if isAdmin();
+    }
+
+    // Delivery Zones:
+    // Public can read active delivery rates.
+    // Only authorized admins can configure zones and fees.
+    match /deliveryZones/{zoneId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Product Reviews:
+    // Public can read reviews.
+    // Customers can submit reviews; only admins can delete or approve/moderate.
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Discount Coupons:
+    // Public can read coupons for checkout code validation.
+    // Only admins can create, modify, or delete coupons.
+    match /coupons/{couponId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
     }
 
     // Wishlists:

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, User, ShoppingBag, Menu, X, Heart, Phone, Shield } from 'lucide-react';
+import { Search, User, ShoppingBag, Menu, X, Heart, Phone, Shield, Truck } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { ActivePage } from '../types';
 import { useCart } from '../context/CartContext';
@@ -24,6 +24,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { label: 'Home', page: 'home' },
     { label: 'Shop', page: 'shop' },
     { label: 'Collections', page: 'collections' },
+    { label: 'Track Order', page: 'track-order' },
     { label: 'About Us', page: 'about' },
     { label: 'Contact', page: 'contact' }
   ];
@@ -105,7 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Wishlist quick link */}
             <button
               id="navbar-wishlist-btn"
-              onClick={() => handleLinkClick('shop')}
+              onClick={() => handleLinkClick('wishlist')}
               className="hidden sm:flex relative p-2 rounded-full text-[#222] hover:text-[#9E7422] hover:bg-[#F2ECE0] transition-colors"
               aria-label="Wishlist"
               title="Wishlist items"
@@ -230,7 +231,30 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-[#F2ECE0]"
                 >
                   <User className="w-4 h-4 text-[#C59A45]" />
-                  <span>Customer Portal</span>
+                  <span>Customer Account & Orders</span>
+                </button>
+
+                <button
+                  onClick={() => handleLinkClick('track-order')}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-[#F2ECE0]"
+                >
+                  <Truck className="w-4 h-4 text-[#C59A45]" />
+                  <span>Track My Order</span>
+                </button>
+
+                <button
+                  onClick={() => handleLinkClick('wishlist')}
+                  className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-[#F2ECE0]"
+                >
+                  <div className="flex items-center gap-3">
+                    <Heart className="w-4 h-4 text-[#C59A45]" />
+                    <span>My Wishlist</span>
+                  </div>
+                  {wishlist.length > 0 && (
+                    <span className="px-2 py-0.5 rounded-full bg-[#121212] text-white text-xs font-bold">
+                      {wishlist.length}
+                    </span>
+                  )}
                 </button>
 
                 <button

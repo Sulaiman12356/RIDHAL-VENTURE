@@ -7,7 +7,7 @@ import {
   updateDoc 
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { Customer } from '../types';
+import { Customer, DeliveryAddress } from '../types';
 
 const CUSTOMERS_COLLECTION = 'customers';
 
@@ -52,7 +52,10 @@ export async function syncCustomer(customerData: {
     const docRef = doc(db, CUSTOMERS_COLLECTION, sanitizedId);
     const existing = await getDoc(docRef);
 
-    const addressEntry = {
+    const addressEntry: DeliveryAddress = {
+      id: 'addr_' + Date.now(),
+      fullName: customerData.name,
+      phone: customerData.phone,
       address: customerData.address,
       city: customerData.city,
       state: customerData.state,
@@ -100,6 +103,9 @@ export async function syncCustomer(customerData: {
       email: customerData.email,
       phone: customerData.phone,
       addresses: [{
+        id: 'addr_' + Date.now(),
+        fullName: customerData.name,
+        phone: customerData.phone,
         address: customerData.address,
         city: customerData.city,
         state: customerData.state,

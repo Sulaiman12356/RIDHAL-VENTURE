@@ -24,7 +24,9 @@ import {
   X,
   Phone,
   Mail,
-  MapPin
+  MapPin,
+  Truck,
+  Tag
 } from 'lucide-react';
 import { 
   Product, 
@@ -54,9 +56,12 @@ import {
   getAllOrders, 
   updateOrderStatus, 
   updatePaymentStatus,
-  updateOrderNotificationStatus 
+  updateOrderNotificationStatus,
+  updateOrderTracking
 } from '../services/orderService';
 import { getAllCustomers } from '../services/customerService';
+import { AdminDeliveryManagement } from '../components/admin/AdminDeliveryManagement';
+import { AdminCouponManagement } from '../components/admin/AdminCouponManagement';
 import { 
   adminLogin, 
   getCurrentAdmin, 
@@ -70,14 +75,17 @@ import {
 } from '../services/notificationService';
 
 interface AdminDashboardViewProps {
-  onBackToStore: () => void;
+  onBackToStore?: () => void;
+  onExitToStore?: () => void;
   onRefreshGlobalStore?: () => void;
 }
 
 export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({ 
   onBackToStore, 
+  onExitToStore,
   onRefreshGlobalStore 
 }) => {
+  const exitToStore = onBackToStore || onExitToStore || (() => {});
   const [admin, setAdmin] = useState<AdminUser | null>(getCurrentAdmin());
   const [email, setEmail] = useState('admin@ridhalventures.com');
   const [password, setPassword] = useState('Admin2026!');
@@ -85,7 +93,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Active admin tab
-  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'categories' | 'orders' | 'customers'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'categories' | 'orders' | 'customers' | 'delivery' | 'coupons'>('overview');
 
   // Data states
   const [products, setProducts] = useState<Product[]>([]);
@@ -100,6 +108,13 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<CategoryItem | null>(null);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState<Order | null>(null);
+
+  // Drawer tracking state
+  const [drawerCarrier, setDrawerCarrier] = useState('');
+  const [drawerNotes, setDrawerNotes] = useState('');
+  const [drawerStatus, setDrawerStatus] = useState<OrderStatus>('Order received');
+  const [drawerPaymentStatus, setDrawerPaymentStatus] = useState<PaymentStatus>('Pending');
+  const [isUpdatingTracking, setIsUpdatingTracking] = useState(false);
 
   // Product Form state
   const [prodName, setProdName] = useState('');
@@ -172,6 +187,45 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       checkNotificationStatus().then(status => setNotificationConfig(status)).catch(() => {});
     }
   }, [admin]);
+
+  useEffect(() => {
+    if (selectedOrderDetails) {
+      setDrawerCarrier(selectedOrderDetails.carrierName || '');
+      setDrawerNotes(selectedOrderDetails.trackingNotes || '');
+      setDrawerStatus(selectedOrderDetails.orderStatus || selectedOrderDetails.status || 'Order received');
+      setDrawerPaymentStatus(selectedOrderDetails.paymentStatus || 'Pending');
+    }
+  }, [selectedOrderDetails]);
+
+  const handleSaveDrawerTracking = async () => {
+    if (!selectedOrderDetails) return;
+    setIsUpdatingTracking(true);
+    try {
+      await updateOrderTracking(selectedOrderDetails.id, {
+        orderStatus: drawerStatus,
+        paymentStatus: drawerPaymentStatus,
+        carrierName: drawerCarrier.trim() || undefined,
+        trackingNotes: drawerNotes.trim() || undefined
+      });
+
+      const updatedOrder: Order = {
+        ...selectedOrderDetails,
+        orderStatus: drawerStatus,
+        status: drawerStatus,
+        paymentStatus: drawerPaymentStatus,
+        carrierName: drawerCarrier.trim() || undefined,
+        trackingNotes: drawerNotes.trim() || undefined
+      };
+
+      setOrders(prev => prev.map(o => o.id === selectedOrderDetails.id ? updatedOrder : o));
+      setSelectedOrderDetails(updatedOrder);
+      notify(`Order ${selectedOrderDetails.id} tracking updated to "${drawerStatus}"`);
+    } catch (err: any) {
+      notify('Failed to update tracking: ' + err.message, 'error');
+    } finally {
+      setIsUpdatingTracking(false);
+    }
+  };
 
   const handleTriggerNotification = async (order: Order) => {
     setIsSendingNotification(order.id);
@@ -539,7 +593,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           <div className="mt-6 pt-6 border-t border-[#2D281F] flex items-center justify-between text-xs text-gray-400">
             <span>Customer view?</span>
             <button
-              onClick={onBackToStore}
+              onClick={exitToStore}
               className="text-[#C59A45] hover:underline flex items-center gap-1"
             >
               Return to Store <ExternalLink className="w-3 h-3" />
@@ -642,6 +696,28 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             >
               Customers ({customers.length})
             </button>
+            <button
+              onClick={() => setActiveTab('delivery')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
+                activeTab === 'delivery' 
+                  ? 'bg-[#C59A45] text-black font-bold' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Truck className="w-3.5 h-3.5" />
+              Delivery
+            </button>
+            <button
+              onClick={() => setActiveTab('coupons')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
+                activeTab === 'coupons' 
+                  ? 'bg-[#C59A45] text-black font-bold' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Tag className="w-3.5 h-3.5" />
+              Coupons
+            </button>
           </nav>
         </div>
 
@@ -654,7 +730,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
           <button
-            onClick={onBackToStore}
+            onClick={exitToStore}
             className="text-xs px-3 py-1.5 border border-[#3E382E] rounded-lg text-amber-200/80 hover:border-[#C59A45] transition-colors flex items-center gap-1.5"
           >
             <Eye className="w-3.5 h-3.5" /> View Store
@@ -1342,6 +1418,16 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             )}
           </div>
         )}
+
+        {/* DELIVERY TAB */}
+        {activeTab === 'delivery' && (
+          <AdminDeliveryManagement />
+        )}
+
+        {/* COUPONS TAB */}
+        {activeTab === 'coupons' && (
+          <AdminCouponManagement />
+        )}
       </main>
 
       {/* ADD / EDIT PRODUCT MODAL */}
@@ -1721,10 +1807,97 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   <span>Shipping Fee ({selectedOrderDetails.customerDetails?.state}):</span>
                   <span>{formatNaira(selectedOrderDetails.deliveryFee)}</span>
                 </div>
+                {selectedOrderDetails.discountAmount && selectedOrderDetails.discountAmount > 0 ? (
+                  <div className="flex justify-between text-emerald-400">
+                    <span>Discount Coupon ({selectedOrderDetails.appliedCoupon}):</span>
+                    <span>-{formatNaira(selectedOrderDetails.discountAmount)}</span>
+                  </div>
+                ) : null}
                 <div className="flex justify-between text-white font-bold text-sm pt-1 border-t border-[#24201A]">
                   <span>Total Amount:</span>
                   <span className="text-[#C59A45]">{formatNaira(selectedOrderDetails.total)}</span>
                 </div>
+              </div>
+
+              {/* Order Tracking & Fulfillment Status Control */}
+              <div className="bg-[#12110E] p-3.5 rounded-xl border border-[#3E382E] space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-white flex items-center gap-1.5">
+                    <Truck className="w-3.5 h-3.5 text-[#C59A45]" />
+                    Order Status & Tracking Controls
+                  </span>
+                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-[#25221C] text-[#C59A45] border border-[#3E382E]">
+                    {drawerStatus}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <label className="block text-gray-400 mb-1 text-[10px]">Fulfillment Status</label>
+                    <select
+                      value={drawerStatus}
+                      onChange={(e) => setDrawerStatus(e.target.value as OrderStatus)}
+                      className="w-full bg-[#181613] border border-[#3E382E] rounded-lg px-2.5 py-1.5 text-white"
+                    >
+                      <option value="Order received">1. Order received</option>
+                      <option value="Payment pending">2. Payment pending</option>
+                      <option value="Payment confirmed">3. Payment confirmed</option>
+                      <option value="Processing">4. Processing / Packaging</option>
+                      <option value="Ready for delivery">5. Ready for delivery</option>
+                      <option value="Shipped">6. Shipped / In Transit</option>
+                      <option value="Delivered">7. Delivered to Customer</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-400 mb-1 text-[10px]">Payment Status</label>
+                    <select
+                      value={drawerPaymentStatus}
+                      onChange={(e) => setDrawerPaymentStatus(e.target.value as PaymentStatus)}
+                      className="w-full bg-[#181613] border border-[#3E382E] rounded-lg px-2.5 py-1.5 text-white"
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Paid">Paid</option>
+                      <option value="Failed">Failed</option>
+                      <option value="Refunded">Refunded</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <label className="block text-gray-400 mb-1 text-[10px]">Courier / Dispatcher Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Ridhal Local Dispatch, GIG, DHL"
+                      value={drawerCarrier}
+                      onChange={(e) => setDrawerCarrier(e.target.value)}
+                      className="w-full bg-[#181613] border border-[#3E382E] rounded-lg px-2.5 py-1.5 text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-400 mb-1 text-[10px]">Tracking Notes / ETA Landmark</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Dispatched from Ijebu-Ode, arrival 4pm"
+                      value={drawerNotes}
+                      onChange={(e) => setDrawerNotes(e.target.value)}
+                      className="w-full bg-[#181613] border border-[#3E382E] rounded-lg px-2.5 py-1.5 text-white"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSaveDrawerTracking}
+                  disabled={isUpdatingTracking}
+                  className="w-full py-2 bg-[#C59A45] hover:bg-[#A37B2C] text-black font-bold rounded-lg text-xs flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
+                >
+                  {isUpdatingTracking ? <RefreshCw className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                  Save Tracking & Order Status
+                </button>
               </div>
 
               {/* Order Notification To Admin */}

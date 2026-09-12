@@ -91,6 +91,52 @@
         "role": { "type": "string", "description": "Administrator permission level" }
       },
       "required": ["id", "email", "role"]
+    },
+    "DeliveryZone": {
+      "title": "DeliveryZone",
+      "description": "Configurable delivery zone and shipping rates",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique zone ID" },
+        "name": { "type": "string", "description": "Zone name, e.g. Ijebu-Ode Town" },
+        "fee": { "type": "number", "description": "Shipping fee in Naira" },
+        "estimatedTime": { "type": "string", "description": "Estimated delivery timeline" },
+        "available": { "type": "boolean", "description": "Whether shipping to this zone is active" },
+        "allowPayOnDelivery": { "type": "boolean", "description": "Whether Pay on Delivery is supported" }
+      },
+      "required": ["id", "name", "fee", "estimatedTime", "available"]
+    },
+    "ProductReview": {
+      "title": "ProductReview",
+      "description": "Customer feedback and verified buyer ratings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique review ID" },
+        "productId": { "type": "string", "description": "Associated product ID" },
+        "customerId": { "type": "string", "description": "Customer ID or reviewer UID" },
+        "customerName": { "type": "string", "description": "Reviewer name" },
+        "rating": { "type": "number", "description": "Star rating 1 to 5" },
+        "comment": { "type": "string", "description": "Review text" },
+        "verifiedBuyer": { "type": "boolean", "description": "Whether verified customer" },
+        "status": { "type": "string", "description": "approved or pending" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of review submission" }
+      },
+      "required": ["id", "productId", "customerName", "rating", "comment", "createdAt"]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "Store discount promotion codes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique coupon ID" },
+        "code": { "type": "string", "description": "Coupon promo code in uppercase" },
+        "type": { "type": "string", "description": "percentage or fixed" },
+        "value": { "type": "number", "description": "Discount percentage or amount in Naira" },
+        "minSpend": { "type": "number", "description": "Minimum subtotal required in Naira" },
+        "active": { "type": "boolean", "description": "Whether coupon is active" },
+        "expiryDate": { "type": "string", "description": "Optional ISO expiry date" }
+      },
+      "required": ["id", "code", "type", "value", "active"]
     }
   },
   "firestore": {
@@ -117,6 +163,18 @@
     "/admins/{adminId}": {
       "schema": "Admin",
       "description": "Store managers and administrative credentials"
+    },
+    "/deliveryZones/{zoneId}": {
+      "schema": "DeliveryZone",
+      "description": "Admin-configured delivery locations and fees"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "ProductReview",
+      "description": "Customer product reviews and ratings"
+    },
+    "/coupons/{couponId}": {
+      "schema": "Coupon",
+      "description": "Store discount coupons"
     }
   }
 }

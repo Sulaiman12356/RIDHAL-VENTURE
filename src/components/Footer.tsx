@@ -104,6 +104,14 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <button
+                  onClick={() => handleNav('wishlist')}
+                  className="hover:text-[#E7CF9B] hover:translate-x-1 transition-all inline-flex items-center gap-1.5"
+                >
+                  My Saved Wishlist
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => handleNav('about')}
                   className="hover:text-[#E7CF9B] hover:translate-x-1 transition-all inline-flex items-center gap-1.5"
                 >
@@ -120,7 +128,47 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <button
-                  onClick={onOpenPrivacy}
+                  onClick={() => handleNav('account')}
+                  className="hover:text-[#E7CF9B] hover:translate-x-1 transition-all inline-flex items-center gap-1.5"
+                >
+                  My Customer Account
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNav('track-order')}
+                  className="hover:text-[#E7CF9B] hover:translate-x-1 transition-all inline-flex items-center gap-1.5"
+                >
+                  Track My Order
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNav('faqs')}
+                  className="hover:text-[#E7CF9B] hover:translate-x-1 transition-all inline-flex items-center gap-1.5"
+                >
+                  FAQs
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNav('shipping-policy')}
+                  className="hover:text-[#E7CF9B] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 text-[#AAA]"
+                >
+                  Shipping & Delivery Policy
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNav('refund-policy')}
+                  className="hover:text-[#E7CF9B] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 text-[#AAA]"
+                >
+                  Return & Exchange Policy
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNav('privacy')}
                   className="hover:text-[#E7CF9B] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 text-[#888]"
                 >
                   Privacy Policy
@@ -128,7 +176,7 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <button
-                  onClick={onOpenTerms}
+                  onClick={() => handleNav('terms')}
                   className="hover:text-[#E7CF9B] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 text-[#888]"
                 >
                   Terms & Conditions

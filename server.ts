@@ -305,6 +305,231 @@ app.post('/api/orders/notify', async (req, res) => {
 });
 
 // ----------------------------------------------------
+// PAYMENT GATEWAY INTEGRATION (PAYSTACK / FLUTTERWAVE)
+// ----------------------------------------------------
+
+// Get payment gateway public status
+app.get('/api/payment/config', (req, res) => {
+  const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
+  const paystackPublic = process.env.PAYSTACK_PUBLIC_KEY;
+  const flutterwaveSecret = process.env.FLUTTERWAVE_SECRET_KEY;
+
+  res.json({
+    onlinePaymentEnabled: Boolean(paystackSecret || flutterwaveSecret),
+    paystack: {
+      available: Boolean(paystackSecret),
+      publicKey: paystackPublic || null,
+    },
+    flutterwave: {
+      available: Boolean(flutterwaveSecret),
+    },
+    bankTransfer: {
+      enabled: true,
+      bankName: 'Moniepoint Microfinance Bank',
+      accountName: 'RIDHAL VENTURES',
+      accountNumber: '8223940182',
+    },
+    cashOnDelivery: {
+      enabled: true,
+      note: 'Available for selected delivery zones (Ijebu-Ode and designated Ogun State areas)',
+    }
+  });
+});
+
+// Initialize online payment transaction via Paystack
+app.post('/api/payment/initialize', async (req, res) => {
+  const { email, amount, orderId, callbackUrl } = req.body;
+
+  if (!email || !amount || !orderId) {
+    return res.status(400).json({
+      success: false,
+      message: 'Missing required parameters: email, amount, and orderId are required.',
+    });
+  }
+
+  const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
+
+  if (!paystackSecret) {
+    return res.status(503).json({
+      success: false,
+      configured: false,
+      gateway: 'paystack',
+      message: 'Paystack integration credentials are pending configuration in the server environment (PAYSTACK_SECRET_KEY). Customers can still select Direct Bank Transfer or Pay on Delivery to complete orders.',
+    });
+  }
+
+  try {
+    // Paystack takes amount in kobo (1 Naira = 100 kobo)
+    const amountInKobo = Math.round(Number(amount) * 100);
+
+    const response = await fetch('https://api.paystack.co/transaction/initialize', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${paystackSecret}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        amount: amountInKobo,
+        reference: `${orderId}_${Date.now()}`,
+        callback_url: callbackUrl || undefined,
+        metadata: {
+          orderId,
+          custom_fields: [
+            { display_name: 'Order Reference', variable_name: 'order_id', value: orderId },
+          ],
+        },
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.status) {
+      return res.json({
+        success: true,
+        authorizationUrl: data.data.authorization_url,
+        accessCode: data.data.access_code,
+        reference: data.data.reference,
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: data.message || 'Unable to initialize transaction with Paystack',
+      });
+    }
+  } catch (error: any) {
+    console.error('Paystack initialization error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Payment initialization failed',
+    });
+  }
+});
+
+// Verify online payment with payment gateway
+app.get('/api/payment/verify/:reference', async (req, res) => {
+  const { reference } = req.params;
+
+  if (!reference) {
+    return res.status(400).json({ success: false, message: 'Transaction reference is required' });
+  }
+
+  const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
+
+  if (!paystackSecret) {
+    return res.status(503).json({
+      success: false,
+      verified: false,
+      message: 'Cannot verify online payment: PAYSTACK_SECRET_KEY is not configured in server environment.',
+    });
+  }
+
+  try {
+    const response = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
+      headers: {
+        'Authorization': `Bearer ${paystackSecret}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.status && data.data.status === 'success') {
+      return res.json({
+        success: true,
+        verified: true,
+        status: 'success',
+        amount: data.data.amount / 100, // convert kobo back to Naira
+        reference: data.data.reference,
+        channel: data.data.channel,
+        paidAt: data.data.paid_at,
+        customer: data.data.customer,
+      });
+    } else {
+      return res.json({
+        success: false,
+        verified: false,
+        status: data.data?.status || 'failed',
+        message: data.message || 'Payment verification did not return success',
+      });
+    }
+  } catch (error: any) {
+    console.error('Payment verification error:', error);
+    return res.status(500).json({
+      success: false,
+      verified: false,
+      message: error.message || 'Error occurred while verifying payment',
+    });
+  }
+});
+
+// Contact message endpoint
+app.post('/api/contact', async (req, res) => {
+  const { name, email, phone, message, subject } = req.body;
+
+  if (!name || (!email && !phone) || !message) {
+    return res.status(400).json({
+      success: false,
+      message: 'Name, message, and at least one contact method (email or phone) are required.',
+    });
+  }
+
+  // Check if SMTP or notification service is available to forward email to owner
+  let emailDispatched = false;
+  let dispatchNote = '';
+
+  if (process.env.RESEND_API_KEY || process.env.SENDGRID_API_KEY || (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)) {
+    try {
+      const contactHtml = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #FAF8F5;">
+          <div style="max-width: 600px; margin: 0 auto; background: white; padding: 24px; border-radius: 8px; border: 1px solid #DFC377;">
+            <h2 style="color: #121212; border-bottom: 2px solid #9E7422; padding-bottom: 8px;">New Customer Inquiry - Ridhal Ventures</h2>
+            <p><strong>Customer Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email || 'Not provided'}</p>
+            <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+            <p><strong>Subject:</strong> ${subject || 'General Store Inquiry'}</p>
+            <div style="margin-top: 16px; padding: 14px; background: #F6F2EA; border-radius: 6px;">
+              <strong>Message:</strong>
+              <p style="white-space: pre-wrap; margin-top: 8px;">${message}</p>
+            </div>
+            <p style="margin-top: 20px; font-size: 12px; color: #777;">Sent via Ridhal Ventures Online Store.</p>
+          </div>
+        </div>
+      `;
+
+      if (process.env.RESEND_API_KEY) {
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            from: `Ridhal Contact <${process.env.RESEND_FROM_EMAIL || 'orders@resend.dev'}>`,
+            to: [ADMIN_NOTIFICATION_EMAIL],
+            subject: `[Customer Inquiry] ${subject || 'Store Message'} - ${name}`,
+            html: contactHtml
+          })
+        });
+        emailDispatched = true;
+        dispatchNote = 'Inquiry forwarded to store owner email.';
+      }
+    } catch (e: any) {
+      console.warn('Could not forward contact inquiry by email:', e.message);
+    }
+  }
+
+  res.json({
+    success: true,
+    emailDispatched,
+    message: emailDispatched 
+      ? 'Thank you! Your message has been sent directly to the Ridhal Ventures team.' 
+      : 'Thank you! Your message has been received. Our team will get back to you promptly.',
+    note: dispatchNote || undefined
+  });
+});
+
+
+// ----------------------------------------------------
 // VITE OR STATIC SERVING
 // ----------------------------------------------------
 async function startServer() {

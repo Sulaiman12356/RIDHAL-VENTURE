@@ -125,3 +125,26 @@ export async function updatePaymentStatus(orderId: string, paymentStatus: Paymen
     throw error;
   }
 }
+
+export async function updateOrderTracking(
+  orderId: string,
+  data: {
+    orderStatus?: OrderStatus;
+    paymentStatus?: PaymentStatus;
+    carrierName?: string;
+    trackingNotes?: string;
+    estimatedDelivery?: string;
+  }
+): Promise<void> {
+  try {
+    const docRef = doc(db, ORDERS_COLLECTION, orderId);
+    const updatePayload: any = { ...data };
+    if (data.orderStatus) {
+      updatePayload.status = data.orderStatus;
+    }
+    await updateDoc(docRef, updatePayload);
+  } catch (error) {
+    console.error('Error updating order tracking:', error);
+    throw error;
+  }
+}

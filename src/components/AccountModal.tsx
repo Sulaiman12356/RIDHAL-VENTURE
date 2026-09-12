@@ -7,12 +7,14 @@ interface AccountModalProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigateOrder?: () => void;
+  onNavigateAccount?: () => void;
 }
 
 export const AccountModal: React.FC<AccountModalProps> = ({
   isOpen,
   onClose,
-  onNavigateOrder
+  onNavigateOrder,
+  onNavigateAccount
 }) => {
   const { currentOrder } = useCart();
   const [activeTab, setActiveTab] = useState<'profile' | 'order'>('profile');
@@ -102,6 +104,19 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                 </div>
               </div>
 
+              {onNavigateAccount && (
+                <button
+                  onClick={() => {
+                    onClose();
+                    onNavigateAccount();
+                  }}
+                  className="w-full py-2.5 px-4 bg-[#C59A45] hover:bg-[#A87F2F] text-[#121212] font-bold text-xs rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Open Full Customer Account & Orders</span>
+                </button>
+              )}
+
               <div className="text-center pt-2">
                 <p className="text-xs text-gray-500 mb-3">
                   Need custom measurements or bulk orders for events and ceremonies?
@@ -136,9 +151,9 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                     </div>
 
                     <div className="text-xs text-gray-600 border-t border-[#EDE6D6] pt-2 mt-2 space-y-1">
-                      <div>Recipient: <strong className="text-gray-900">{currentOrder.customer.fullName}</strong></div>
-                      <div>Destination: {currentOrder.customer.city}, {currentOrder.customer.state}</div>
-                      <div>Items: {currentOrder.items.length} product(s)</div>
+                      <div>Recipient: <strong className="text-gray-900">{currentOrder.customer?.fullName || currentOrder.customerDetails?.fullName || 'Customer'}</strong></div>
+                      <div>Destination: {currentOrder.customer?.city || currentOrder.customerDetails?.city || ''}, {currentOrder.customer?.state || currentOrder.customerDetails?.state || ''}</div>
+                      <div>Items: {currentOrder.items?.length || 0} product(s)</div>
                       <div className="font-bold text-gray-900 pt-1">
                         Total: {formatNaira(currentOrder.total)}
                       </div>

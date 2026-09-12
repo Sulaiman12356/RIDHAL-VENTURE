@@ -13,10 +13,15 @@ import { CollectionsView } from './views/CollectionsView';
 import { AboutView } from './views/AboutView';
 import { ContactView } from './views/ContactView';
 import { ProductDetailView } from './views/ProductDetailView';
+import { WishlistView } from './views/WishlistView';
 import { CartView } from './views/CartView';
 import { CheckoutView } from './views/CheckoutView';
 import { OrderConfirmationView } from './views/OrderConfirmationView';
 import { AdminDashboardView } from './views/AdminDashboardView';
+import { AccountView } from './views/AccountView';
+import { OrderTrackingView } from './views/OrderTrackingView';
+import { PolicyPageView } from './views/PolicyPageView';
+import { WhatsAppSupportButton } from './components/WhatsAppSupportButton';
 
 import { ActivePage, Product } from './types';
 import { PRODUCTS } from './data/products';
@@ -35,6 +40,7 @@ function MainAppContent() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [policyType, setPolicyType] = useState<'privacy' | 'terms' | null>(null);
+  const [trackingOrderNumber, setTrackingOrderNumber] = useState<string>('');
 
   // Synchronize dynamic products and categories from Firestore
   const reloadCatalog = useCallback(async () => {
@@ -58,7 +64,13 @@ function MainAppContent() {
     reloadCatalog();
   }, [reloadCatalog]);
 
-  const navigateTo = (page: ActivePage) => {
+  const navigateTo = (page: ActivePage, extra?: any) => {
+    if (page === 'shop') {
+      setStoreCategoryFilter('All');
+    }
+    if (extra?.orderNumber) {
+      setTrackingOrderNumber(extra.orderNumber);
+    }
     setActivePage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -86,7 +98,7 @@ function MainAppContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#1A1A1A] font-sans antialiased selection:bg-[#EBD8A9] selection:text-[#121212]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#1A1A1A] font-sans antialiased selection:bg-[#EBD8A9] selection:text-[#121212] relative">
       
       {/* 1. Top Announcement Bar */}
       <AnnouncementBar />
@@ -101,7 +113,7 @@ function MainAppContent() {
           navigateTo(page);
         }}
         onOpenSearch={() => setIsSearchOpen(true)}
-        onOpenAccount={() => setIsAccountOpen(true)}
+        onOpenAccount={() => navigateTo('account')}
       />
 
       {/* Main Dynamic View Content */}
@@ -150,6 +162,14 @@ function MainAppContent() {
           />
         )}
 
+        {activePage === 'wishlist' && (
+          <WishlistView
+            onNavigate={navigateTo}
+            onViewProduct={handleSelectProduct}
+            products={storeProducts}
+          />
+        )}
+
         {activePage === 'cart' && (
           <CartView
             onNavigate={navigateTo}
@@ -164,6 +184,28 @@ function MainAppContent() {
         {activePage === 'order-confirmation' && (
           <OrderConfirmationView onNavigate={navigateTo} />
         )}
+
+        {activePage === 'account' && (
+          <AccountView onNavigate={navigateTo} />
+        )}
+
+        {(activePage === 'track-order' || activePage === 'order-tracking') && (
+          <OrderTrackingView
+            initialOrderNumber={trackingOrderNumber}
+            onNavigate={navigateTo}
+          />
+        )}
+
+        {(activePage === 'privacy' || 
+          activePage === 'terms' || 
+          activePage === 'shipping-policy' || 
+          activePage === 'refund-policy' || 
+          activePage === 'faqs') && (
+          <PolicyPageView
+            pageType={activePage as any}
+            onNavigate={navigateTo}
+          />
+        )}
       </main>
 
       {/* Footer */}
@@ -172,9 +214,12 @@ function MainAppContent() {
           if (page === 'shop') setStoreCategoryFilter('All');
           navigateTo(page);
         }}
-        onOpenPrivacy={() => setPolicyType('privacy')}
-        onOpenTerms={() => setPolicyType('terms')}
+        onOpenPrivacy={() => navigateTo('privacy')}
+        onOpenTerms={() => navigateTo('terms')}
       />
+
+      {/* Floating 24/7 WhatsApp Customer Support Widget */}
+      <WhatsAppSupportButton />
 
       {/* Modals & Dialogs */}
       <SearchModal
@@ -189,6 +234,7 @@ function MainAppContent() {
         isOpen={isAccountOpen}
         onClose={() => setIsAccountOpen(false)}
         onNavigateOrder={() => navigateTo('order-confirmation')}
+        onNavigateAccount={() => navigateTo('account')}
       />
 
       <PolicyModals
