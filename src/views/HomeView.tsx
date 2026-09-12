@@ -1,11 +1,12 @@
-import React from 'react';
-import { ArrowRight, ShieldCheck, Gem, Headphones, Truck } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { ArrowRight, ShieldCheck, Gem, Headphones, Truck, Sparkles, Star, Flame, BookOpen } from 'lucide-react';
 import { CATEGORIES } from '../data/categories';
 import { PRODUCTS } from '../data/products';
 import { ProductCard } from '../components/ProductCard';
 import { CategoryCard } from '../components/CategoryCard';
 import { Product, ActivePage } from '../types';
 import heroImg from '../assets/images/hero_banner_1789167622411.jpg';
+import { handleImageError } from '../utils/imageUtils';
 
 interface HomeViewProps {
   onNavigate: (page: ActivePage) => void;
@@ -15,6 +16,18 @@ interface HomeViewProps {
   categories?: any[];
 }
 
+const FILTER_TABS = [
+  'All',
+  'Jalab & Abaya',
+  'Scarfs & Hijabs',
+  'Quran & Islamic Essentials',
+  'English Dresses',
+  'Jewelries',
+  'Shoes & Bags',
+  'Wrist Watches',
+  'Singlet & Boxers'
+];
+
 export const HomeView: React.FC<HomeViewProps> = ({
   onNavigate,
   onSelectCategory,
@@ -22,12 +35,32 @@ export const HomeView: React.FC<HomeViewProps> = ({
   products = PRODUCTS,
   categories = CATEGORIES
 }) => {
-  // Featured products from catalog
-  const featuredProducts = products.filter((p) => p.featured).slice(0, 4);
+  const [selectedFilter, setSelectedFilter] = useState<string>('All');
+  const [displayLimit, setDisplayLimit] = useState<number>(8);
+
+  // Filtered products for main showcase
+  const filteredProducts = useMemo(() => {
+    if (selectedFilter === 'All') {
+      return products;
+    }
+    return products.filter((p) => p.category === selectedFilter);
+  }, [products, selectedFilter]);
+
+  // New arrivals / trending items (latest added)
+  const newArrivals = useMemo(() => {
+    return [...products]
+      .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
+      .slice(0, 4);
+  }, [products]);
+
+  // Islamic Essentials & Jummah / Ramadan specials
+  const islamicEssentials = useMemo(() => {
+    return products.filter((p) => p.category === 'Quran & Islamic Essentials').slice(0, 4);
+  }, [products]);
 
   return (
     <div className="space-y-14 md:space-y-20 pb-16">
-      {/* 3. HERO SECTION */}
+      {/* 1. HERO SECTION */}
       <section id="hero-section" className="relative px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pt-4 md:pt-8">
         <div className="relative rounded-3xl bg-[#FAF6EE] border border-[#E8DFC8] overflow-hidden shadow-xs">
           {/* Subtle background golden glow */}
@@ -52,7 +85,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
               {/* Supporting Subtitle */}
               <p className="text-base sm:text-lg text-[#554D40] leading-relaxed max-w-xl mx-auto lg:mx-0">
-                Your one stop store for modest fashion, Islamic essentials and timeless accessories.
+                Your one-stop boutique in Ijebu-Ode for luxury modest fashion, Islamic essentials, Turkish gowns, watches, and accessories.
               </p>
 
               {/* CTA Action Buttons */}
@@ -96,6 +129,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     src={heroImg}
                     alt="Elegant Nigerian woman in black luxury abaya with gold embroidery"
                     referrerPolicy="no-referrer"
+                    onError={(e) => handleImageError(e, 'Jalab & Abaya')}
                     className="w-full h-full object-cover object-center group-hover:scale-104 transition-transform duration-700"
                   />
                   {/* Luxury Corner Badge */}
@@ -115,7 +149,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* 4. SHOP BY CATEGORIES SECTION */}
+      {/* 2. SHOP BY CATEGORIES SECTION */}
       <section id="categories-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-8 md:mb-12">
           <span className="text-xs uppercase tracking-widest text-[#9E7422] font-bold">
@@ -139,18 +173,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* 5. FEATURED COLLECTION */}
+      {/* 3. MAIN PRODUCT SHOWCASE (With Filter Tabs & Expanded Grid) */}
       <section id="featured-collection" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-3 border-b border-[#E8DFC8]">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-3 border-b border-[#E8DFC8]">
           <div>
             <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#9E7422]" />
               <span className="text-xs uppercase tracking-widest text-[#9E7422] font-bold">
-                Handpicked Favorites
+                Luxury Collection & Popular Picks
               </span>
             </div>
             <h2 className="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#111] mt-1">
-              Featured Collection
+              Explore Our Products
             </h2>
           </div>
 
@@ -159,14 +194,37 @@ export const HomeView: React.FC<HomeViewProps> = ({
             onClick={() => onNavigate('shop')}
             className="inline-flex items-center gap-1.5 text-sm font-bold text-[#9E7422] hover:text-[#7A5714] transition-colors group"
           >
-            <span>View All</span>
+            <span>View Full Shop ({products.length})</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
 
-        {/* 4 Products Grid matching the Prompt */}
+        {/* Department Filter Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-none mb-6">
+          {FILTER_TABS.map((tab) => {
+            const isSelected = selectedFilter === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => {
+                  setSelectedFilter(tab);
+                  setDisplayLimit(8);
+                }}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all shrink-0 uppercase tracking-wider ${
+                  isSelected
+                    ? 'bg-[#121212] text-[#E7CF9B] border border-[#DFC377] shadow-xs'
+                    : 'bg-white text-[#554D40] border border-[#E8DFC8] hover:border-[#9E7422] hover:bg-[#FAF6EE]'
+                }`}
+              >
+                {tab}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Products Grid: Displays 8 to 16+ products */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredProducts.map((product) => (
+          {filteredProducts.slice(0, displayLimit).map((product) => (
             <ProductCard
               key={product.id}
               product={product}
@@ -174,7 +232,100 @@ export const HomeView: React.FC<HomeViewProps> = ({
             />
           ))}
         </div>
+
+        {/* Action button if more products exist in this category */}
+        {filteredProducts.length > displayLimit && (
+          <div className="text-center pt-10">
+            <button
+              onClick={() => setDisplayLimit((prev) => prev + 8)}
+              className="px-8 py-3 rounded-xl bg-white hover:bg-[#FAF6EE] text-[#121212] border-2 border-[#DFC377] text-xs font-bold uppercase tracking-wider transition-colors shadow-2xs inline-flex items-center gap-2"
+            >
+              <span>Show More Products ({filteredProducts.length - displayLimit} remaining)</span>
+            </button>
+          </div>
+        )}
       </section>
+
+      {/* 4. NEW ARRIVALS & TRENDING THIS WEEK */}
+      {newArrivals.length > 0 && (
+        <section id="new-arrivals-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="p-6 sm:p-8 md:p-10 rounded-3xl bg-gradient-to-br from-[#171717] via-[#121212] to-[#242018] text-white border border-[#DFC377]/40 shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-white/10">
+              <div>
+                <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#DFC377] font-bold">
+                  <Flame className="w-4 h-4 text-[#DFC377]" />
+                  <span>Fresh In Store</span>
+                </div>
+                <h2 className="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#FAF8F5] mt-1">
+                  Trending New Arrivals
+                </h2>
+                <p className="text-xs sm:text-sm text-gray-300 mt-1 max-w-xl">
+                  Discover the newest modest dresses, Dubai open abayas, tailored Moroccan jalabs, and accessories.
+                </p>
+              </div>
+
+              <button
+                onClick={() => onNavigate('shop')}
+                className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#DFC377] hover:text-[#F3E2B8] transition-colors"
+              >
+                <span>Explore All New Styles</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* 4 Product Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {newArrivals.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onViewDetails={onViewProduct}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 5. JUMMAH & RAMADAN / ISLAMIC ESSENTIALS SPOTLIGHT */}
+      {islamicEssentials.length > 0 && (
+        <section id="islamic-essentials-spotlight" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-3 border-b border-[#E8DFC8]">
+            <div>
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-[#9E7422]" />
+                <span className="text-xs uppercase tracking-widest text-[#9E7422] font-bold">
+                  Spiritual & Prayer Essentials
+                </span>
+              </div>
+              <h2 className="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#111] mt-1">
+                Quran & Prayer Collection
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                Archival Arabic Qurans with Tajweed, orthopedic memory foam prayer mats, digital tasbih counters, and travel sets.
+              </p>
+            </div>
+
+            <button
+              onClick={() => onSelectCategory('Quran & Islamic Essentials')}
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-[#9E7422] hover:text-[#7A5714] transition-colors group"
+            >
+              <span>View All Islamic Items</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {islamicEssentials.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onViewDetails={onViewProduct}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 6. WHY SHOP WITH US */}
       <section id="why-shop-with-us" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

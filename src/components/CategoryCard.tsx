@@ -1,5 +1,6 @@
 import React from 'react';
 import { CategoryItem } from '../types';
+import { handleImageError, CATEGORY_FALLBACK_IMAGES } from '../utils/imageUtils';
 
 interface CategoryCardProps {
   category: CategoryItem;
@@ -10,6 +11,8 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
   category,
   onSelect
 }) => {
+  const imgSrc = category.image || CATEGORY_FALLBACK_IMAGES[category.name] || '';
+
   return (
     <div
       id={`category-card-${category.slug}`}
@@ -20,9 +23,12 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
       <div className="relative w-full aspect-[4/5] bg-white rounded-2xl border border-[#DFC377] p-2 shadow-xs group-hover:shadow-md transition-shadow overflow-hidden">
         <div className="w-full h-full rounded-xl overflow-hidden bg-[#F7F3EB] relative">
           <img
-            src={category.image}
+            src={imgSrc}
             alt={category.name}
             referrerPolicy="no-referrer"
+            loading="lazy"
+            decoding="async"
+            onError={(e) => handleImageError(e, category.name)}
             className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500"
           />
           {/* Subtle gradient vignette */}

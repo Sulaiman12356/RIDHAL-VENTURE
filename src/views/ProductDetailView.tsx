@@ -22,6 +22,7 @@ import { PRODUCTS, formatNaira } from '../data/products';
 import { useCart } from '../context/CartContext';
 import { ProductCard } from '../components/ProductCard';
 import { getProductReviews, submitProductReview, ProductReview } from '../services/reviewService';
+import { getProductImage, handleImageError } from '../utils/imageUtils';
 
 interface ProductDetailViewProps {
   product: Product;
@@ -224,9 +225,10 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
         <div className="lg:col-span-6 space-y-4">
           <div className="relative aspect-square w-full rounded-2xl bg-white border border-[#E5DFD5] overflow-hidden shadow-xs">
             <img
-              src={product.images[selectedImageIndex] || product.images[0]}
+              src={product.images[selectedImageIndex] || product.images[0] || getProductImage(product)}
               alt={product.name}
               referrerPolicy="no-referrer"
+              onError={(e) => handleImageError(e, product.category)}
               className="w-full h-full object-cover object-center transition-all duration-300"
             />
 
@@ -268,6 +270,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                     src={img}
                     alt={`${product.name} view ${idx + 1}`}
                     referrerPolicy="no-referrer"
+                    onError={(e) => handleImageError(e, product.category)}
                     className="w-full h-full object-cover"
                   />
                 </button>

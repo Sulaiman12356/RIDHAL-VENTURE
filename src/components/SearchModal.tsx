@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, X, ArrowRight, ShoppingBag } from 'lucide-react';
 import { Product } from '../types';
 import { PRODUCTS, formatNaira } from '../data/products';
+import { getProductImage, handleImageError } from '../utils/imageUtils';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -140,9 +141,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                 >
                   <div className="w-14 h-14 rounded-md overflow-hidden bg-white border border-[#E8DFC8] flex-shrink-0">
                     <img
-                      src={product.images[0]}
+                      src={getProductImage(product)}
                       alt={product.name}
                       referrerPolicy="no-referrer"
+                      loading="lazy"
+                      onError={(e) => handleImageError(e, product.category)}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>

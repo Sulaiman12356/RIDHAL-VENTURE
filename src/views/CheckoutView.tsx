@@ -19,6 +19,7 @@ import {
 import { useCart } from '../context/CartContext';
 import { formatNaira, NIGERIAN_STATES } from '../data/products';
 import { ActivePage, PaymentMethod, CustomerInfo, Order, DeliveryZone, OrderStatus } from '../types';
+import { getProductImage, handleImageError } from '../utils/imageUtils';
 import { createOrder } from '../services/orderService';
 import { syncCustomer } from '../services/customerService';
 import { normalizeOrderStatus } from '../services/trackingService';
@@ -619,9 +620,11 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ onNavigate }) => {
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
-                    src={item.product.images[0]}
+                    src={getProductImage(item.product)}
                     alt={item.product.name}
                     referrerPolicy="no-referrer"
+                    loading="lazy"
+                    onError={(e) => handleImageError(e, item.product.category)}
                     className="w-10 h-10 rounded-md object-cover border border-[#E5DFD5] shrink-0"
                   />
                   <div className="truncate">

@@ -3,6 +3,7 @@ import { Trash2, Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, Truck, ShieldC
 import { useCart } from '../context/CartContext';
 import { formatNaira, NIGERIAN_STATES } from '../data/products';
 import { ActivePage, Product } from '../types';
+import { getProductImage, handleImageError } from '../utils/imageUtils';
 
 interface CartViewProps {
   onNavigate: (page: ActivePage) => void;
@@ -93,9 +94,11 @@ export const CartView: React.FC<CartViewProps> = ({
                     className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-[#FAF6EE] border border-[#E8DFC8] flex-shrink-0 cursor-pointer"
                   >
                     <img
-                      src={item.product.images[0]}
+                      src={getProductImage(item.product)}
                       alt={item.product.name}
                       referrerPolicy="no-referrer"
+                      loading="lazy"
+                      onError={(e) => handleImageError(e, item.product.category)}
                       className="w-full h-full object-cover hover:scale-105 transition-transform"
                     />
                   </div>

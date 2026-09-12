@@ -3,6 +3,7 @@ import { Heart, ShoppingBag, ArrowRight, Trash2, Check, Share2, Sparkles, AlertC
 import { useCart } from '../context/CartContext';
 import { formatNaira } from '../data/products';
 import { ActivePage, Product } from '../types';
+import { getProductImage, handleImageError } from '../utils/imageUtils';
 
 interface WishlistViewProps {
   onNavigate: (page: ActivePage) => void;
@@ -156,9 +157,11 @@ export const WishlistView: React.FC<WishlistViewProps> = ({
               {/* Image & Quick View Link */}
               <div className="relative aspect-square bg-[#FAF6EE] overflow-hidden group cursor-pointer" onClick={() => onViewProduct(product)}>
                 <img
-                  src={product.images[0]}
+                  src={getProductImage(product)}
                   alt={product.name}
                   referrerPolicy="no-referrer"
+                  loading="lazy"
+                  onError={(e) => handleImageError(e, product.category)}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
 

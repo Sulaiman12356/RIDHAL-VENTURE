@@ -14,6 +14,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../lib/firebase';
 import { Product } from '../types';
 import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
+import { DEFAULT_FALLBACK_IMAGE } from '../utils/imageUtils';
 
 const PRODUCTS_COLLECTION = 'products';
 
@@ -59,10 +60,44 @@ export async function getAllProducts(): Promise<Product[]> {
       return await seedProductsIfEmpty();
     }
     
-    return snapshot.docs.map(doc => ({
+    const dbProducts = snapshot.docs.map(doc => ({
       ...doc.data(),
       id: doc.id
     } as Product));
+
+    // Create a lookup of firestore products by id and slug
+    const dbMap = new Map<string, Product>();
+    dbProducts.forEach(p => {
+      dbMap.set(p.id, p);
+      if (p.slug) dbMap.set(p.slug, p);
+    });
+
+    // Merge in any rich INITIAL_PRODUCTS that are not in DB, and ensure valid images
+    const mergedList: Product[] = [...dbProducts];
+
+    for (const initProd of INITIAL_PRODUCTS) {
+      const existing = dbMap.get(initProd.id) || (initProd.slug ? dbMap.get(initProd.slug) : undefined);
+      if (!existing) {
+        mergedList.push(initProd);
+      } else {
+        // If existing in DB has no images or empty images, repair with verified images
+        if (!existing.images || existing.images.length === 0 || !existing.images[0]) {
+          existing.images = initProd.images;
+        }
+      }
+    }
+
+    // Ensure all products have valid images array
+    return mergedList.map(p => {
+      if (!p.images || p.images.length === 0 || !p.images[0]) {
+        const fallback = INITIAL_PRODUCTS.find(x => x.id === p.id || x.category === p.category);
+        return {
+          ...p,
+          images: fallback?.images || [DEFAULT_FALLBACK_IMAGE]
+        };
+      }
+      return p;
+    });
   } catch (error) {
     console.error('Error fetching products from Firestore:', error);
     return INITIAL_PRODUCTS;

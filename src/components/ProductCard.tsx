@@ -3,6 +3,7 @@ import { Heart, ShoppingBag, Eye, Check } from 'lucide-react';
 import { Product } from '../types';
 import { formatNaira } from '../data/products';
 import { useCart } from '../context/CartContext';
+import { getProductImage, handleImageError } from '../utils/imageUtils';
 
 interface ProductCardProps {
   product: Product;
@@ -45,9 +46,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Image Stage */}
       <div className="relative aspect-square w-full bg-[#F6F2EA] overflow-hidden">
         <img
-          src={product.images[0]}
+          src={getProductImage(product)}
           alt={product.name}
           referrerPolicy="no-referrer"
+          loading="lazy"
+          decoding="async"
+          onError={(e) => handleImageError(e, product.category)}
           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
         />
 
