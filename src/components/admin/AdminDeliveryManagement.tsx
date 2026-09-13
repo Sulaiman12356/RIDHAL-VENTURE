@@ -14,7 +14,7 @@ export const AdminDeliveryManagement: React.FC = () => {
   const [name, setName] = useState('');
   const [regionsInput, setRegionsInput] = useState('');
   const [fee, setFee] = useState<number>(2000);
-  const [estimatedDays, setEstimatedDays] = useState('1 - 2 business days');
+  const [estimatedDays, setEstimatedDays] = useState('1 to 2 business days');
   const [isActive, setIsActive] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -40,7 +40,7 @@ export const AdminDeliveryManagement: React.FC = () => {
     setName('');
     setRegionsInput('');
     setFee(2000);
-    setEstimatedDays('1 - 2 business days');
+    setEstimatedDays('1 to 2 business days');
     setIsActive(true);
     setIsModalOpen(true);
   };
@@ -70,7 +70,7 @@ export const AdminDeliveryManagement: React.FC = () => {
         regions,
         fee: Number(fee),
         estimatedDays: estimatedDays.trim(),
-        estimatedTime: estimatedDays.trim() || '2 - 3 Business Days',
+        estimatedTime: estimatedDays.trim() || '2 to 3 Business Days',
         available: isActive,
         isActive
       });

@@ -757,15 +757,15 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                 <div className="p-3 bg-white rounded-xl border border-[#E5DFD5]">
                   <strong className="block text-[#121212] mb-1">Ijebu-Ode Metropolis:</strong>
-                  <span className="text-xs text-[#736B63]">Same-day delivery or free store pickup. Standard: ₦1,500 - ₦2,000.</span>
+                  <span className="text-xs text-[#736B63]">Same-day delivery or free store pickup. Standard: ₦1,500 to ₦2,000.</span>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-[#E5DFD5]">
                   <strong className="block text-[#121212] mb-1">Ogun State & Lagos:</strong>
-                  <span className="text-xs text-[#736B63]">1–2 business days via express intrastate transit.</span>
+                  <span className="text-xs text-[#736B63]">1 to 2 business days via express intrastate transit.</span>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-[#E5DFD5]">
                   <strong className="block text-[#121212] mb-1">Nationwide Nigeria:</strong>
-                  <span className="text-xs text-[#736B63]">2–4 business days with live parcel tracking.</span>
+                  <span className="text-xs text-[#736B63]">2 to 4 business days with live parcel tracking.</span>
                 </div>
               </div>
             </div>
@@ -867,22 +867,22 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                   <tbody className="divide-y divide-[#E5DFD5]">
                     <tr>
                       <td className="p-2 font-bold text-[#121212]">Size 52</td>
-                      <td className="p-2">5&apos;0&quot; - 5&apos;2&quot;</td>
+                      <td className="p-2">5&apos;0&quot; to 5&apos;2&quot;</td>
                       <td className="p-2">Loose modest fit (up to 44&quot;)</td>
                     </tr>
                     <tr>
                       <td className="p-2 font-bold text-[#121212]">Size 54</td>
-                      <td className="p-2">5&apos;3&quot; - 5&apos;5&quot;</td>
+                      <td className="p-2">5&apos;3&quot; to 5&apos;5&quot;</td>
                       <td className="p-2">Loose modest fit (up to 46&quot;)</td>
                     </tr>
                     <tr>
                       <td className="p-2 font-bold text-[#121212]">Size 56</td>
-                      <td className="p-2">5&apos;6&quot; - 5&apos;8&quot;</td>
+                      <td className="p-2">5&apos;6&quot; to 5&apos;8&quot;</td>
                       <td className="p-2">Loose modest fit (up to 48&quot;)</td>
                     </tr>
                     <tr>
                       <td className="p-2 font-bold text-[#121212]">Size 58</td>
-                      <td className="p-2">5&apos;9&quot; - 6&apos;0&quot;</td>
+                      <td className="p-2">5&apos;9&quot; to 6&apos;0&quot;</td>
                       <td className="p-2">Loose modest fit (up to 52&quot;)</td>
                     </tr>
                   </tbody>

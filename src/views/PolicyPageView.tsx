@@ -31,11 +31,11 @@ export const PolicyPageView: React.FC<PolicyPageViewProps> = ({ pageType, onNavi
   const FAQS_DATA = [
     {
       question: "Where is Ridhal Ventures located, and can I pick up in person?",
-      answer: "Yes! Our walk-in store is located at 5, Bass street, off idomowo, adjacent to new market police station, Ijebu-Ode, Ogun State, Nigeria. You are welcome to visit our physical showroom during business hours (Monday to Saturday: 8:00 AM - 6:30 PM) for fitting, fabric inspection, or immediate order pickup."
+      answer: "Yes! Our walk-in store is located at 5, Bass street, off idomowo, adjacent to new market police station, Ijebu-Ode, Ogun State, Nigeria. You are welcome to visit our physical showroom during business hours (Monday to Saturday: 8:00 AM to 6:30 PM) for fitting, fabric inspection, or immediate order pickup."
     },
     {
       question: "How long does delivery take within Ijebu-Ode and across Nigeria?",
-      answer: "Orders within Ijebu-Ode central are delivered Same Day or within 24 hours via local dispatch riders. Neighboring Ogun State towns (Abeokuta, Sagamu, Ago-Iwoye) and Lagos State take 1 - 2 business days. South-West states take 2 - 3 business days, while Abuja (FCT), South-East, and Northern states take 3 - 5 business days via established nationwide logistics partners."
+      answer: "Orders within Ijebu-Ode central are delivered Same Day or within 24 hours via local dispatch riders. Neighboring Ogun State towns (Abeokuta, Sagamu, Ago-Iwoye) and Lagos State take 1 to 2 business days. South-West states take 2 to 3 business days, while Abuja (FCT), South-East, and Northern states take 3 to 5 business days via established nationwide logistics partners."
     },
     {
       question: "What payment methods are supported?",
@@ -43,7 +43,7 @@ export const PolicyPageView: React.FC<PolicyPageViewProps> = ({ pageType, onNavi
     },
     {
       question: "How do I choose the correct Jalab or Abaya size?",
-      answer: "Abayas and Jalabs are traditionally sized by height in inches (Size 52 fits 5'0\"-5'2\", Size 54 fits 5'3\"-5'5\", Size 56 fits 5'6\"-5'8\", Size 58 fits 5'9\"-6'0\"). Standard men's and women's clothing also offer standard S, M, L, XL, XXL. If you are unsure, you can click the WhatsApp support button and our personal styling assistant will guide your exact measurements."
+      answer: "Abayas and Jalabs are traditionally sized by height in inches (Size 52 fits 5'0\" to 5'2\", Size 54 fits 5'3\" to 5'5\", Size 56 fits 5'6\" to 5'8\", Size 58 fits 5'9\" to 6'0\"). Standard men's and women's clothing also offer standard S, M, L, XL, XXL. If you are unsure, you can click the WhatsApp support button and our personal styling assistant will guide your exact measurements."
     },
     {
       question: "What is your Return and Exchange Policy?",
@@ -51,7 +51,7 @@ export const PolicyPageView: React.FC<PolicyPageViewProps> = ({ pageType, onNavi
     },
     {
       question: "Are the fabrics genuine and authentic?",
-      answer: "Absolutely. Every piece at Ridhal Ventures—from our Emirati Nidha abayas to Turkish prayer rugs, Egyptian cotton underwear, and hand-embroidered Omani jalabs—is hand-selected and quality-inspected to guarantee superior comfort, durability, and modesty."
+      answer: "Absolutely. Every piece at Ridhal Ventures, from our Emirati Nidha abayas to Turkish prayer rugs, Egyptian cotton underwear, and hand-embroidered Omani jalabs, is hand-selected and quality-inspected to guarantee superior comfort, durability, and modesty."
     },
     {
       question: "Can I place custom wholesale or bridal orders?",
@@ -173,27 +173,27 @@ export const PolicyPageView: React.FC<PolicyPageViewProps> = ({ pageType, onNavi
                       </tr>
                       <tr>
                         <td className="p-3 font-medium text-[#121212]">Ijebu Environs (Ago-Iwoye, Ijebu-Igbo, Oru, Obalende)</td>
-                        <td className="p-3">1 - 2 Business Days</td>
+                        <td className="p-3">1 to 2 Business Days</td>
                         <td className="p-3">Intrastate Transit Rider</td>
                       </tr>
                       <tr>
                         <td className="p-3 font-medium text-[#121212]">Ogun State Other (Abeokuta, Sagamu, Mowe, Ibafo)</td>
-                        <td className="p-3">1 - 3 Business Days</td>
+                        <td className="p-3">1 to 3 Business Days</td>
                         <td className="p-3">Statewide Courier Network</td>
                       </tr>
                       <tr>
                         <td className="p-3 font-medium text-[#121212]">Lagos State (Mainland, Island, Lekki, Ikeja)</td>
-                        <td className="p-3">1 - 2 Business Days</td>
+                        <td className="p-3">1 to 2 Business Days</td>
                         <td className="p-3">Express Interstate Courier</td>
                       </tr>
                       <tr>
                         <td className="p-3 font-medium text-[#121212]">South-West (Oyo/Ibadan, Osun, Ondo, Ekiti, Kwara)</td>
-                        <td className="p-3">2 - 3 Business Days</td>
+                        <td className="p-3">2 to 3 Business Days</td>
                         <td className="p-3">Regional Transit Logistics</td>
                       </tr>
                       <tr>
                         <td className="p-3 font-medium text-[#121212]">Abuja FCT, Kano, Kaduna, Port Harcourt, Enugu</td>
-                        <td className="p-3">3 - 5 Business Days</td>
+                        <td className="p-3">3 to 5 Business Days</td>
                         <td className="p-3">National Air Cargo / Motor Park Hub</td>
                       </tr>
                     </tbody>

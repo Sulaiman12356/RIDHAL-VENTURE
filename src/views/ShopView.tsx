@@ -526,7 +526,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
 
               {(minPrice > 0 || maxPrice < 65000) && (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-[#F6F2EA] text-[#9E7422] font-semibold border border-[#DFC377]">
-                  Price: {formatNaira(minPrice)} - {formatNaira(maxPrice)}
+                  Price: {formatNaira(minPrice)} to {formatNaira(maxPrice)}
                   <button onClick={() => { setMinPrice(0); setMaxPrice(65000); }} className="hover:text-black">
                     <X className="w-3 h-3" />
                   </button>

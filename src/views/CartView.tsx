@@ -226,7 +226,7 @@ export const CartView: React.FC<CartViewProps> = ({
             >
               {NIGERIAN_STATES.map((st) => (
                 <option key={st} value={st}>
-                  {st} {st === 'Ogun' ? '(Local - Ijebu-Ode)' : ''}
+                  {st} {st === 'Ogun' ? '(Local, Ijebu Ode)' : ''}
                 </option>
               ))}
             </select>

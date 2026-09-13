@@ -27,7 +27,7 @@ export const DEFAULT_DELIVERY_ZONES: DeliveryZone[] = [
     id: 'zone-ijebu-environs',
     name: 'Ijebu Environs (Ago-Iwoye, Ijebu-Igbo, Oru, Obalende, Ilese)',
     fee: 2500,
-    estimatedTime: '1 - 2 Business Days',
+    estimatedTime: '1 to 2 Business Days',
     available: true,
     allowPayOnDelivery: true,
     description: 'Local campus and outskirts dispatch across nearby Ijebu towns.'
@@ -36,7 +36,7 @@ export const DEFAULT_DELIVERY_ZONES: DeliveryZone[] = [
     id: 'zone-ogun-other',
     name: 'Ogun State Other (Abeokuta, Sagamu, Mowe, Ibafo, Sango Ota)',
     fee: 3000,
-    estimatedTime: '1 - 3 Business Days',
+    estimatedTime: '1 to 3 Business Days',
     available: true,
     allowPayOnDelivery: false,
     description: 'Dedicated intrastate courier delivery across Ogun State.'
@@ -45,7 +45,7 @@ export const DEFAULT_DELIVERY_ZONES: DeliveryZone[] = [
     id: 'zone-lagos-express',
     name: 'Lagos State Express (Mainland & Island, Lekki, Ikeja)',
     fee: 3500,
-    estimatedTime: '1 - 2 Business Days',
+    estimatedTime: '1 to 2 Business Days',
     available: true,
     allowPayOnDelivery: false,
     description: 'Interstate rapid transit directly to Lagos residences & offices.'
@@ -54,7 +54,7 @@ export const DEFAULT_DELIVERY_ZONES: DeliveryZone[] = [
     id: 'zone-south-west',
     name: 'South-West States (Oyo/Ibadan, Osun, Ondo, Ekiti, Kwara)',
     fee: 4000,
-    estimatedTime: '2 - 3 Business Days',
+    estimatedTime: '2 to 3 Business Days',
     available: true,
     allowPayOnDelivery: false,
     description: 'Regional courier delivery to major South-West state capitals & cities.'
@@ -63,7 +63,7 @@ export const DEFAULT_DELIVERY_ZONES: DeliveryZone[] = [
     id: 'zone-abuja-fct',
     name: 'Abuja (FCT) & Northern States (Kano, Kaduna, Jos)',
     fee: 5000,
-    estimatedTime: '3 - 5 Business Days',
+    estimatedTime: '3 to 5 Business Days',
     available: true,
     allowPayOnDelivery: false,
     description: 'Air cargo / interstate motor park logistics to Federal Capital & North.'
@@ -72,7 +72,7 @@ export const DEFAULT_DELIVERY_ZONES: DeliveryZone[] = [
     id: 'zone-south-east-south',
     name: 'South-East & South-South (Rivers/PH, Delta, Edo, Enugu, Anambra)',
     fee: 5000,
-    estimatedTime: '3 - 5 Business Days',
+    estimatedTime: '3 to 5 Business Days',
     available: true,
     allowPayOnDelivery: false,
     description: 'Secure interstate transport and doorstep delivery.'

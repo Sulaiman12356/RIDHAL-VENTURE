@@ -126,7 +126,7 @@ export const ContactView: React.FC = () => {
           {/* Operating hours */}
           <div className="p-4 bg-white rounded-xl border border-[#E8DFC8] flex items-center gap-3 text-xs text-gray-600">
             <Clock className="w-4 h-4 text-[#9E7422] flex-shrink-0" />
-            <span>Store hours: Monday – Saturday (8:30 AM – 6:30 PM)</span>
+            <span>Store hours: Monday to Saturday (8:30 AM to 6:30 PM)</span>
           </div>
 
         </div>
