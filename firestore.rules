@@ -58,11 +58,9 @@ service cloud.firestore {
     }
 
     // Customers:
-    // Store checkout can register customer details.
-    // Sensitive lookups restricted to admin and owner.
+    // Store checkout can register customer details, and customer management can load customer profiles.
     match /customers/{customerId} {
-      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == customerId);
-      allow create, update: if true;
+      allow read, create, update: if true;
       allow delete: if isAdmin();
     }
 

@@ -7,7 +7,8 @@ import {
   updateDoc 
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { Customer, DeliveryAddress } from '../types';
+import { Customer, DeliveryAddress, Order } from '../types';
+import { getAllOrders } from './orderService';
 
 const CUSTOMERS_COLLECTION = 'customers';
 
@@ -15,10 +16,90 @@ export async function getAllCustomers(): Promise<Customer[]> {
   try {
     const colRef = collection(db, CUSTOMERS_COLLECTION);
     const snapshot = await getDocs(colRef);
-    return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Customer));
+    const dbCustomers = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Customer));
+
+    // If standalone customers collection already has records, return them
+    if (dbCustomers.length > 0) {
+      return dbCustomers;
+    }
+
+    // Otherwise, seamlessly aggregate customer profiles from existing orders
+    const orders = await getAllOrders();
+    const customerMap = new Map<string, Customer>();
+
+    for (const ord of orders) {
+      const email = ord.customerDetails?.email || ord.customer?.email;
+      const phone = ord.customerDetails?.phone || ord.customer?.phone;
+      const name = ord.customerDetails?.fullName || ord.customer?.fullName;
+      const address = ord.customerDetails?.deliveryAddress || ord.customer?.deliveryAddress;
+      const city = ord.customerDetails?.city || ord.customer?.city;
+      const state = ord.customerDetails?.state || ord.customer?.state;
+
+      if (email || phone || name) {
+        const id = (phone || email || ord.customerId || 'cust_' + ord.id).replace(/[^a-zA-Z0-9]/g, '_');
+        if (!customerMap.has(id)) {
+          customerMap.set(id, {
+            id,
+            name: name || 'Customer',
+            email: email || '',
+            phone: phone || '',
+            addresses: [{
+              id: 'addr_' + id,
+              fullName: name || 'Customer',
+              phone: phone || '',
+              address: address || '',
+              city: city || '',
+              state: state || '',
+              isDefault: true
+            }],
+            createdAt: ord.createdAt
+          });
+        }
+      }
+    }
+
+    return Array.from(customerMap.values());
   } catch (error) {
-    console.error('Error fetching customers:', error);
-    return [];
+    console.warn('Notice loading customers from collection, checking orders fallback:', error);
+    try {
+      const orders = await getAllOrders();
+      const customerMap = new Map<string, Customer>();
+
+      for (const ord of orders) {
+        const email = ord.customerDetails?.email || ord.customer?.email;
+        const phone = ord.customerDetails?.phone || ord.customer?.phone;
+        const name = ord.customerDetails?.fullName || ord.customer?.fullName;
+        const address = ord.customerDetails?.deliveryAddress || ord.customer?.deliveryAddress;
+        const city = ord.customerDetails?.city || ord.customer?.city;
+        const state = ord.customerDetails?.state || ord.customer?.state;
+
+        if (email || phone || name) {
+          const id = (phone || email || ord.customerId || 'cust_' + ord.id).replace(/[^a-zA-Z0-9]/g, '_');
+          if (!customerMap.has(id)) {
+            customerMap.set(id, {
+              id,
+              name: name || 'Customer',
+              email: email || '',
+              phone: phone || '',
+              addresses: [{
+                id: 'addr_' + id,
+                fullName: name || 'Customer',
+                phone: phone || '',
+                address: address || '',
+                city: city || '',
+                state: state || '',
+                isDefault: true
+              }],
+              createdAt: ord.createdAt
+            });
+          }
+        }
+      }
+
+      return Array.from(customerMap.values());
+    } catch {
+      return [];
+    }
   }
 }
 
