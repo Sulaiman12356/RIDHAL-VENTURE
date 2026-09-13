@@ -1,3 +1,4 @@
+import React from 'react';
 import abayaImg from '../assets/images/abaya_product_1789167636274.jpg';
 import scarfImg from '../assets/images/scarf_product_1789167648823.jpg';
 import quranImg from '../assets/images/quran_product_1789167661627.jpg';
