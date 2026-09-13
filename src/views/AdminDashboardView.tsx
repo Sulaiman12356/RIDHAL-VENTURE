@@ -654,12 +654,18 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                     required
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    className="w-full bg-[#12110F] border border-[#3E382E] rounded-xl pl-4 pr-10 py-3 text-sm text-white focus:outline-none focus:border-[#C59A45] transition-colors font-mono"
+                    className="w-full bg-[#12110F] border border-[#3E382E] rounded-xl pl-4 pr-11 py-3 text-sm text-white focus:outline-none focus:border-[#C59A45] transition-colors font-mono"
                     placeholder="••••••••"
                   />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
-                    <Lock className="w-4 h-4" />
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#DFC377] transition-colors p-1"
+                    title={showPassword ? 'Hide password' : 'Show password'}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 

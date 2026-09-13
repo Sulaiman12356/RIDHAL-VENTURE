@@ -14,6 +14,7 @@ import {
   Plus, 
   Trash2, 
   Eye, 
+  EyeOff,
   Printer, 
   MessageCircle, 
   ArrowRight, 
@@ -54,6 +55,8 @@ export const AccountView: React.FC<AccountViewProps> = ({ onNavigate }) => {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
 
   // Active tab when logged in
   const [activeTab, setActiveTab] = useState<'orders' | 'addresses' | 'profile'>('orders');
@@ -301,14 +304,29 @@ export const AccountView: React.FC<AccountViewProps> = ({ onNavigate }) => {
                     Forgot Password?
                   </button>
                 </div>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-2.5 bg-[#FAF8F5] border border-[#E5DFD5] rounded-lg text-sm focus:outline-none focus:border-[#9E7422]"
-                />
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-4 pr-11 py-2.5 bg-[#FAF8F5] border border-[#E5DFD5] rounded-lg text-sm focus:outline-none focus:border-[#9E7422]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#736B63] hover:text-[#121212] transition-colors p-1"
+                    title={showLoginPassword ? 'Hide password' : 'Show password'}
+                    aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showLoginPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <button
@@ -403,15 +421,30 @@ export const AccountView: React.FC<AccountViewProps> = ({ onNavigate }) => {
                 <label className="block text-xs font-semibold uppercase tracking-wider text-[#736B63] mb-1">
                   Password (min 6 characters)
                 </label>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-2.5 bg-[#FAF8F5] border border-[#E5DFD5] rounded-lg text-sm focus:outline-none focus:border-[#9E7422]"
-                />
+                <div className="relative">
+                  <input
+                    type={showRegisterPassword ? 'text' : 'password'}
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-4 pr-11 py-2.5 bg-[#FAF8F5] border border-[#E5DFD5] rounded-lg text-sm focus:outline-none focus:border-[#9E7422]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegisterPassword(!showRegisterPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#736B63] hover:text-[#121212] transition-colors p-1"
+                    title={showRegisterPassword ? 'Hide password' : 'Show password'}
+                    aria-label={showRegisterPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showRegisterPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <button
