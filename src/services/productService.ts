@@ -73,17 +73,35 @@ export async function getAllProducts(): Promise<Product[]> {
     });
 
     // Merge in any rich INITIAL_PRODUCTS that are not in DB, and ensure valid images
-    const mergedList: Product[] = [...dbProducts];
+    const initProdMap = new Map(INITIAL_PRODUCTS.map(p => [p.id, p]));
+    const mergedList: Product[] = [];
+
+    // Track processed IDs to avoid any duplicate rendering
+    const processedIds = new Set<string>();
+
+    for (const dbProd of dbProducts) {
+      processedIds.add(dbProd.id);
+      const initProd = initProdMap.get(dbProd.id);
+      
+      if (initProd) {
+        // If DB product is one of the standard catalog items, ensure it receives the unique authentic non-repeating image
+        // unless a custom admin image was explicitly uploaded (e.g. data: or firebase storage)
+        const hasCustomUpload = Array.isArray(dbProd.images) && dbProd.images.some(img => img?.startsWith('data:') || img?.includes('firebasestorage'));
+        const images = hasCustomUpload ? dbProd.images : initProd.images;
+
+        mergedList.push({
+          ...initProd,
+          ...dbProd,
+          images: images && images.length > 0 ? images : initProd.images
+        });
+      } else {
+        mergedList.push(dbProd);
+      }
+    }
 
     for (const initProd of INITIAL_PRODUCTS) {
-      const existing = dbMap.get(initProd.id) || (initProd.slug ? dbMap.get(initProd.slug) : undefined);
-      if (!existing) {
+      if (!processedIds.has(initProd.id)) {
         mergedList.push(initProd);
-      } else {
-        // If existing in DB has no images or empty images, repair with verified images
-        if (!existing.images || existing.images.length === 0 || !existing.images[0]) {
-          existing.images = initProd.images;
-        }
       }
     }
 

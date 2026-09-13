@@ -20,13 +20,20 @@ import {
   Layers,
   Users,
   Eye,
+  EyeOff,
   Check,
   X,
   Phone,
   Mail,
   MapPin,
   Truck,
-  Tag
+  Tag,
+  Key,
+  Copy,
+  Lock,
+  UserCheck,
+  Database,
+  Sparkles
 } from 'lucide-react';
 import { 
   Product, 
@@ -55,7 +62,7 @@ import {
 import { 
   getAllOrders, 
   updateOrderStatus, 
-  updatePaymentStatus,
+  updatePaymentStatus, 
   updateOrderNotificationStatus,
   updateOrderTracking
 } from '../services/orderService';
@@ -66,7 +73,8 @@ import {
   adminLogin, 
   getCurrentAdmin, 
   adminLogout, 
-  AUTHORIZED_ADMIN_EMAILS 
+  AUTHORIZED_ADMIN_EMAILS,
+  isAuthorizedAdminEmail
 } from '../services/adminAuthService';
 import { 
   checkNotificationStatus, 
@@ -91,6 +99,14 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [password, setPassword] = useState('Admin2026!');
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
+
+  const handleCopy = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopyFeedback(label);
+    setTimeout(() => setCopyFeedback(null), 2000);
+  };
 
   // Active admin tab
   const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'categories' | 'orders' | 'customers' | 'delivery' | 'coupons'>('overview');
@@ -530,76 +546,425 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
   // Login view if unauthenticated
   if (!admin) {
+    const isEmailAuthorized = isAuthorizedAdminEmail(email);
+
     return (
-      <div className="min-h-screen bg-[#121212] text-white flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-[#1C1A17] border border-[#C59A45]/30 rounded-2xl p-8 shadow-2xl relative">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto rounded-full bg-[#C59A45]/10 border border-[#C59A45] flex items-center justify-center text-[#C59A45] mb-4">
-              <Shield className="w-8 h-8" />
+      <div className="min-h-screen bg-[#0D0C0A] text-white flex flex-col justify-between p-4 sm:p-6 md:p-10 font-sans">
+        {/* Top Header with Return Link */}
+        <header className="max-w-6xl w-full mx-auto flex items-center justify-between py-2 border-b border-[#2A241A]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C59A45]/20 to-[#8C6316]/30 border border-[#C59A45]/40 flex items-center justify-center text-[#E7CF9B] shadow-inner">
+              <Shield className="w-5 h-5 text-[#C59A45]" />
             </div>
-            <h1 className="text-2xl font-serif font-bold text-[#F5E4B5] tracking-wide">
-              RIDHAL VENTURES
-            </h1>
-            <p className="text-xs text-amber-200/60 uppercase tracking-widest mt-1">
-              Store Administration Portal
+            <div>
+              <h1 className="font-serif text-lg sm:text-xl font-bold tracking-wide text-[#F5E4B5]">
+                RIDHAL VENTURES
+              </h1>
+              <p className="text-[10px] text-amber-200/60 uppercase tracking-widest">
+                Store Administration & Security Portal
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={exitToStore}
+            className="px-3.5 py-1.5 rounded-lg bg-[#1F1B14] hover:bg-[#2A241A] border border-[#3E382E] text-xs text-[#E7CF9B] hover:text-white transition-colors flex items-center gap-1.5"
+          >
+            <span>Storefront</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </button>
+        </header>
+
+        {/* Main Content Grid */}
+        <main className="max-w-6xl w-full mx-auto my-6 sm:my-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+          
+          {/* LEFT COLUMN: Full Details of Admin Logins & Privileges */}
+          <div className="lg:col-span-6 bg-[#161411] border border-[#3A3326] rounded-2xl p-5 sm:p-7 shadow-xl space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-[#2A241A]">
+              <div className="flex items-center gap-2">
+                <Key className="w-4 h-4 text-[#C59A45]" />
+                <h2 className="text-sm sm:text-base font-serif font-bold text-[#F5E4B5]">
+                  Authorized Admin Login Details
+                </h2>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-[#2E281C] text-[#C59A45] border border-[#C59A45]/30 text-[10px] font-semibold tracking-wider uppercase">
+                RBAC Security
+              </span>
+            </div>
+
+            <p className="text-xs text-gray-300 leading-relaxed">
+              Below are the official authorized credentials and administrative privileges required to access the Ridhal Ventures management backend.
             </p>
+
+            {/* Authorized Accounts List */}
+            <div className="space-y-2.5">
+              <label className="block text-[11px] uppercase tracking-wider text-amber-200/70 font-semibold">
+                Authorized Administrator Accounts
+              </label>
+
+              {/* Account 1: Master Admin */}
+              <div 
+                onClick={() => {
+                  setEmail('admin@ridhalventures.com');
+                  setPassword('Admin2026!');
+                }}
+                className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between text-xs ${
+                  email === 'admin@ridhalventures.com'
+                    ? 'bg-[#262016] border-[#C59A45] text-white shadow-sm'
+                    : 'bg-[#1A1814] border-[#2E281C] text-gray-300 hover:border-[#4D422E]'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center gap-1.5 font-semibold text-[#F5E4B5]">
+                    <span>admin@ridhalventures.com</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#C59A45]/20 text-[#DFC377] border border-[#C59A45]/40 font-mono">
+                      Master
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-gray-400 mt-0.5">
+                    Primary store manager with full catalog, orders & settings access
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopy('admin@ridhalventures.com', 'Master Email');
+                  }}
+                  className="p-1.5 rounded-lg bg-[#2D261A] hover:bg-[#3D3322] text-[#DFC377] transition-colors text-[10px] flex items-center gap-1 shrink-0 ml-2"
+                  title="Copy email"
+                >
+                  <Copy className="w-3 h-3" />
+                  {copyFeedback === 'Master Email' ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+
+              {/* Account 2: Store Owner */}
+              <div 
+                onClick={() => {
+                  setEmail('ipesolasulaiman@gmail.com');
+                  setPassword('Admin2026!');
+                }}
+                className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between text-xs ${
+                  email === 'ipesolasulaiman@gmail.com'
+                    ? 'bg-[#262016] border-[#C59A45] text-white shadow-sm'
+                    : 'bg-[#1A1814] border-[#2E281C] text-gray-300 hover:border-[#4D422E]'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center gap-1.5 font-semibold text-[#F5E4B5]">
+                    <span>ipesolasulaiman@gmail.com</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/50 font-mono">
+                      Owner
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-gray-400 mt-0.5">
+                    Store proprietor executive access & financial management
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopy('ipesolasulaiman@gmail.com', 'Owner Email');
+                  }}
+                  className="p-1.5 rounded-lg bg-[#2D261A] hover:bg-[#3D3322] text-[#DFC377] transition-colors text-[10px] flex items-center gap-1 shrink-0 ml-2"
+                  title="Copy email"
+                >
+                  <Copy className="w-3 h-3" />
+                  {copyFeedback === 'Owner Email' ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+
+              {/* Account 3: Operations & Dispatch */}
+              <div 
+                onClick={() => {
+                  setEmail('alhajabizventure@gmail.com');
+                  setPassword('Admin2026!');
+                }}
+                className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between text-xs ${
+                  email === 'alhajabizventure@gmail.com'
+                    ? 'bg-[#262016] border-[#C59A45] text-white shadow-sm'
+                    : 'bg-[#1A1814] border-[#2E281C] text-gray-300 hover:border-[#4D422E]'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center gap-1.5 font-semibold text-[#F5E4B5]">
+                    <span>alhajabizventure@gmail.com</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-950/60 text-amber-300 border border-amber-700/50 font-mono">
+                      Operations
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-gray-400 mt-0.5">
+                    Order dispatch, logistics tracking & notification routing
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopy('alhajabizventure@gmail.com', 'Ops Email');
+                  }}
+                  className="p-1.5 rounded-lg bg-[#2D261A] hover:bg-[#3D3322] text-[#DFC377] transition-colors text-[10px] flex items-center gap-1 shrink-0 ml-2"
+                  title="Copy email"
+                >
+                  <Copy className="w-3 h-3" />
+                  {copyFeedback === 'Ops Email' ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            {/* Standard Access Key / Password */}
+            <div className="p-3.5 bg-[#1B1915] border border-[#3E382E] rounded-xl flex items-center justify-between">
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-amber-200/60 font-semibold">
+                  Administrator Access Key / Password
+                </div>
+                <div className="font-mono text-sm font-bold text-[#E7CF9B] mt-0.5 flex items-center gap-2">
+                  <span>Admin2026!</span>
+                  <span className="text-[10px] font-normal text-emerald-400 bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-800/40">
+                    Active & Verified
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleCopy('Admin2026!', 'Password')}
+                  className="px-2.5 py-1.5 rounded-lg bg-[#2D261A] hover:bg-[#3D3322] text-[#DFC377] transition-colors text-xs flex items-center gap-1"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  {copyFeedback === 'Password' ? 'Copied' : 'Copy Key'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPassword('Admin2026!');
+                    setCopyFeedback('Filled');
+                    setTimeout(() => setCopyFeedback(null), 1500);
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg bg-[#C59A45]/20 hover:bg-[#C59A45]/30 text-[#F5E4B5] border border-[#C59A45]/40 transition-colors text-xs font-semibold"
+                >
+                  {copyFeedback === 'Filled' ? 'Filled ✓' : 'Use Key'}
+                </button>
+              </div>
+            </div>
+
+            {/* Permissions Summary Granted Upon Approval */}
+            <div className="pt-2 border-t border-[#2A241A]">
+              <div className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-2">
+                Capabilities Granted Upon Entry Approval
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-300">
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Real-time inventory & pricing</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Firestore order dispatcher</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Tracking numbers & carriers</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Customer registry & notes</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Delivery zones & tariffs</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Promotional coupon codes</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Database & Security Banner */}
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#12110F] border border-[#2A241A] text-[11px] text-gray-400">
+              <Database className="w-3.5 h-3.5 text-[#C59A45] shrink-0" />
+              <span>
+                Connected to <strong className="text-gray-200">Firebase Firestore Cloud Database</strong> with Role-Based Security Rules.
+              </span>
+            </div>
           </div>
 
-          {loginError && (
-            <div className="mb-4 p-3 bg-red-900/40 border border-red-500/50 rounded-lg text-xs text-red-200">
-              {loginError}
-            </div>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-4">
+          {/* RIGHT COLUMN: Pre-Approval Verification & Sign-In Form */}
+          <div className="lg:col-span-6 bg-[#1C1A17] border border-[#C59A45]/40 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+            
+            {/* Header Badge */}
             <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1.5 font-medium">
-                Admin Email
-              </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="w-full bg-[#121212] border border-[#3E382E] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#C59A45]"
-                placeholder="admin@ridhalventures.com"
-              />
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#C59A45]/15 border border-[#C59A45]/40 text-[#DFC377] text-xs font-semibold uppercase tracking-wider mb-3">
+                <UserCheck className="w-3.5 h-3.5" />
+                <span>Pre-Approval Verification</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#F5E4B5]">
+                Admin Sign-In & Entry Approval
+              </h2>
+              <p className="text-xs text-gray-400 mt-1">
+                Verify credentials below before approving access into the administrator dashboard.
+              </p>
             </div>
 
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1.5 font-medium">
-                Password
-              </label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="w-full bg-[#121212] border border-[#3E382E] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#C59A45]"
-                placeholder="••••••••"
-              />
+            {/* Dynamic Pre-Approval Status Box */}
+            <div className={`p-3.5 rounded-xl border transition-all ${
+              isEmailAuthorized
+                ? 'bg-emerald-950/25 border-emerald-600/40 text-emerald-200'
+                : 'bg-amber-950/25 border-amber-600/40 text-amber-200'
+            }`}>
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5 font-medium">
+                  {isEmailAuthorized ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <span>Authorized Admin Account:</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertTriangle className="w-4 h-4 text-amber-400" />
+                      <span>Account Verification:</span>
+                    </>
+                  )}
+                  <span className="font-mono font-bold text-white text-xs truncate max-w-[190px]">
+                    {email || 'None selected'}
+                  </span>
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${
+                  isEmailAuthorized
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                    : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                }`}>
+                  {isEmailAuthorized ? 'Approved' : 'Verify'}
+                </span>
+              </div>
+              <div className="text-[11px] text-gray-300 mt-1.5">
+                {isEmailAuthorized
+                  ? 'Email matches whitelisted administrators in firestore.rules and adminAuthService.'
+                  : 'Please select one of the authorized administrator accounts on the left.'}
+              </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={isLoggingIn}
-              className="w-full py-3 bg-gradient-to-r from-[#9E7422] to-[#C59A45] text-black font-bold text-xs uppercase tracking-widest rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 mt-4"
-            >
-              {isLoggingIn ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
-              Sign In to Management
-            </button>
-          </form>
+            {/* Error Message if any */}
+            {loginError && (
+              <div className="p-3 bg-red-900/40 border border-red-500/50 rounded-xl text-xs text-red-200 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-semibold">Authentication Error</div>
+                  <div>{loginError}</div>
+                </div>
+              </div>
+            )}
 
-          <div className="mt-6 pt-6 border-t border-[#2D281F] flex items-center justify-between text-xs text-gray-400">
-            <span>Customer view?</span>
-            <button
-              onClick={exitToStore}
-              className="text-[#C59A45] hover:underline flex items-center gap-1"
-            >
-              Return to Store <ExternalLink className="w-3 h-3" />
-            </button>
+            {/* The Form */}
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-gray-300 mb-1.5 font-semibold">
+                  Administrator Email Address
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    className="w-full bg-[#12110F] border border-[#3E382E] rounded-xl pl-4 pr-10 py-3 text-sm text-white focus:outline-none focus:border-[#C59A45] transition-colors"
+                    placeholder="admin@ridhalventures.com"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {isEmailAuthorized ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    ) : (
+                      <Mail className="w-4 h-4 text-gray-500" />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs uppercase tracking-wider text-gray-300 font-semibold">
+                    Administrator Access Key / Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-[11px] text-[#C59A45] hover:text-[#DFC377] flex items-center gap-1"
+                  >
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    <span>{showPassword ? 'Hide Key' : 'Show Key'}</span>
+                  </button>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="w-full bg-[#12110F] border border-[#3E382E] rounded-xl pl-4 pr-10 py-3 text-sm text-white focus:outline-none focus:border-[#C59A45] transition-colors font-mono"
+                    placeholder="••••••••"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 space-y-2.5">
+                <button
+                  type="submit"
+                  disabled={isLoggingIn}
+                  className="w-full py-3.5 bg-gradient-to-r from-[#9E7422] via-[#C59A45] to-[#DFC377] text-black font-bold text-xs uppercase tracking-widest rounded-xl hover:opacity-95 active:scale-[0.99] transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+                >
+                  {isLoggingIn ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>Verifying & Authenticating Admin...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="w-4 h-4 text-black" />
+                      <span>Approve Credentials & Enter Admin</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('admin@ridhalventures.com');
+                    setPassword('Admin2026!');
+                    setLoginError('');
+                    setCopyFeedback('Filled Master');
+                    setTimeout(() => setCopyFeedback(null), 1500);
+                  }}
+                  className="w-full py-2.5 bg-[#25221C] hover:bg-[#2F2B24] border border-[#453D30] text-[#E7CF9B] font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#C59A45]" />
+                  <span>{copyFeedback === 'Filled Master' ? 'Master Details Loaded ✓' : 'Auto-Fill Master Administrator Credentials'}</span>
+                </button>
+              </div>
+            </form>
+
+            <div className="pt-4 border-t border-[#2D281F] flex items-center justify-between text-xs text-gray-400">
+              <span>Customer storefront view?</span>
+              <button
+                onClick={exitToStore}
+                className="text-[#C59A45] hover:underline flex items-center gap-1 font-medium"
+              >
+                Return to Store <ExternalLink className="w-3 h-3" />
+              </button>
+            </div>
           </div>
-        </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="max-w-6xl w-full mx-auto py-3 border-t border-[#221E17] text-center text-xs text-gray-500">
+          Ridhal Ventures Administrative Suite • Ijebu-Ode, Ogun State, Nigeria • Phone: 09165317293
+        </footer>
       </div>
     );
   }

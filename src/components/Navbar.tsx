@@ -333,7 +333,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Elegant Footer Details */}
-          <div className="px-6 py-3 border-t border-[#E8DFC8] bg-[#FAF6EE]/80 text-center space-y-1">
+          <div className="px-6 py-3 border-t border-[#E8DFC8] bg-[#FAF6EE]/80 text-center space-y-1.5">
             <div className="flex items-center justify-center gap-2 text-xs font-medium text-[#665D52]">
               <span>Ijebu-Ode, Ogun State</span>
               <span className="text-[#C59A45]">•</span>
@@ -341,8 +341,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                 09165317293
               </a>
             </div>
-            <div className="text-[10px] text-[#8C6316] font-semibold uppercase tracking-widest">
-              Style for Every Occasion
+            <div className="flex items-center justify-center gap-3">
+              <span className="text-[10px] text-[#8C6316] font-semibold uppercase tracking-widest">
+                Style for Every Occasion
+              </span>
+              <span className="text-[#C59A45]">•</span>
+              <button
+                id="mobile-menu-admin-link"
+                onClick={() => handleLinkClick('admin')}
+                className="inline-flex items-center gap-1 text-[11px] text-[#8C6316] hover:text-[#121212] font-semibold underline underline-offset-2"
+              >
+                <Shield className="w-3 h-3 text-[#C59A45]" />
+                <span>Admin Login</span>
+              </button>
             </div>
           </div>
         </div>
