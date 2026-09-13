@@ -95,18 +95,11 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 }) => {
   const exitToStore = onBackToStore || onExitToStore || (() => {});
   const [admin, setAdmin] = useState<AdminUser | null>(getCurrentAdmin());
-  const [email, setEmail] = useState('admin@ridhalventures.com');
-  const [password, setPassword] = useState('Admin2026!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
-
-  const handleCopy = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    setCopyFeedback(label);
-    setTimeout(() => setCopyFeedback(null), 2000);
-  };
 
   // Active admin tab
   const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'categories' | 'orders' | 'customers' | 'delivery' | 'coupons'>('overview');
@@ -154,6 +147,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [catDescription, setCatDescription] = useState('');
   const [catImage, setCatImage] = useState('');
   const [catSubcategories, setCatSubcategories] = useState('');
+  const [isUploadingCatImage, setIsUploadingCatImage] = useState(false);
 
   // Quick edit stock & price
   const [quickStockId, setQuickStockId] = useState<string | null>(null);
@@ -440,9 +434,25 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     setCatName('');
     setCatSlug('');
     setCatDescription('');
-    setCatImage('https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600');
+    setCatImage('');
     setCatSubcategories('');
     setIsAddCategoryOpen(true);
+  };
+
+  const handleCategoryImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingCatImage(true);
+    try {
+      const url = await uploadProductImage(file);
+      setCatImage(url);
+      notify('Category photo uploaded directly from your device!');
+    } catch (err: any) {
+      notify('Category image upload failed: ' + err.message, 'error');
+    } finally {
+      setIsUploadingCatImage(false);
+      e.target.value = '';
+    }
   };
 
   const handleOpenEditCategory = (c: CategoryItem) => {
@@ -546,8 +556,6 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
   // Login view if unauthenticated
   if (!admin) {
-    const isEmailAuthorized = isAuthorizedAdminEmail(email);
-
     return (
       <div className="min-h-screen bg-[#0D0C0A] text-white flex flex-col justify-between p-4 sm:p-6 md:p-10 font-sans">
         {/* Top Header with Return Link */}
@@ -575,277 +583,24 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           </button>
         </header>
 
-        {/* Main Content Grid */}
-        <main className="max-w-6xl w-full mx-auto my-6 sm:my-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          
-          {/* LEFT COLUMN: Full Details of Admin Logins & Privileges */}
-          <div className="lg:col-span-6 bg-[#161411] border border-[#3A3326] rounded-2xl p-5 sm:p-7 shadow-xl space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-[#2A241A]">
-              <div className="flex items-center gap-2">
-                <Key className="w-4 h-4 text-[#C59A45]" />
-                <h2 className="text-sm sm:text-base font-serif font-bold text-[#F5E4B5]">
-                  Authorized Admin Login Details
-                </h2>
+        {/* Main Content Container */}
+        <main className="max-w-md w-full mx-auto my-auto py-8">
+          <div className="bg-[#161411] border border-[#3A3326] rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <div className="text-center space-y-2">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-[#231F18] border border-[#C59A45]/40 flex items-center justify-center text-[#C59A45] shadow-lg">
+                <Lock className="w-7 h-7" />
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-[#2E281C] text-[#C59A45] border border-[#C59A45]/30 text-[10px] font-semibold tracking-wider uppercase">
-                RBAC Security
-              </span>
-            </div>
-
-            <p className="text-xs text-gray-300 leading-relaxed">
-              Below are the official authorized credentials and administrative privileges required to access the Ridhal Ventures management backend.
-            </p>
-
-            {/* Authorized Accounts List */}
-            <div className="space-y-2.5">
-              <label className="block text-[11px] uppercase tracking-wider text-amber-200/70 font-semibold">
-                Authorized Administrator Accounts
-              </label>
-
-              {/* Account 1: Master Admin */}
-              <div 
-                onClick={() => {
-                  setEmail('admin@ridhalventures.com');
-                  setPassword('Admin2026!');
-                }}
-                className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between text-xs ${
-                  email === 'admin@ridhalventures.com'
-                    ? 'bg-[#262016] border-[#C59A45] text-white shadow-sm'
-                    : 'bg-[#1A1814] border-[#2E281C] text-gray-300 hover:border-[#4D422E]'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center gap-1.5 font-semibold text-[#F5E4B5]">
-                    <span>admin@ridhalventures.com</span>
-                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#C59A45]/20 text-[#DFC377] border border-[#C59A45]/40 font-mono">
-                      Master
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-gray-400 mt-0.5">
-                    Primary store manager with full catalog, orders & settings access
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCopy('admin@ridhalventures.com', 'Master Email');
-                  }}
-                  className="p-1.5 rounded-lg bg-[#2D261A] hover:bg-[#3D3322] text-[#DFC377] transition-colors text-[10px] flex items-center gap-1 shrink-0 ml-2"
-                  title="Copy email"
-                >
-                  <Copy className="w-3 h-3" />
-                  {copyFeedback === 'Master Email' ? 'Copied' : 'Copy'}
-                </button>
-              </div>
-
-              {/* Account 2: Store Owner */}
-              <div 
-                onClick={() => {
-                  setEmail('ipesolasulaiman@gmail.com');
-                  setPassword('Admin2026!');
-                }}
-                className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between text-xs ${
-                  email === 'ipesolasulaiman@gmail.com'
-                    ? 'bg-[#262016] border-[#C59A45] text-white shadow-sm'
-                    : 'bg-[#1A1814] border-[#2E281C] text-gray-300 hover:border-[#4D422E]'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center gap-1.5 font-semibold text-[#F5E4B5]">
-                    <span>ipesolasulaiman@gmail.com</span>
-                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/50 font-mono">
-                      Owner
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-gray-400 mt-0.5">
-                    Store proprietor executive access & financial management
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCopy('ipesolasulaiman@gmail.com', 'Owner Email');
-                  }}
-                  className="p-1.5 rounded-lg bg-[#2D261A] hover:bg-[#3D3322] text-[#DFC377] transition-colors text-[10px] flex items-center gap-1 shrink-0 ml-2"
-                  title="Copy email"
-                >
-                  <Copy className="w-3 h-3" />
-                  {copyFeedback === 'Owner Email' ? 'Copied' : 'Copy'}
-                </button>
-              </div>
-
-              {/* Account 3: Operations & Dispatch */}
-              <div 
-                onClick={() => {
-                  setEmail('alhajabizventure@gmail.com');
-                  setPassword('Admin2026!');
-                }}
-                className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between text-xs ${
-                  email === 'alhajabizventure@gmail.com'
-                    ? 'bg-[#262016] border-[#C59A45] text-white shadow-sm'
-                    : 'bg-[#1A1814] border-[#2E281C] text-gray-300 hover:border-[#4D422E]'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center gap-1.5 font-semibold text-[#F5E4B5]">
-                    <span>alhajabizventure@gmail.com</span>
-                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-950/60 text-amber-300 border border-amber-700/50 font-mono">
-                      Operations
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-gray-400 mt-0.5">
-                    Order dispatch, logistics tracking & notification routing
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCopy('alhajabizventure@gmail.com', 'Ops Email');
-                  }}
-                  className="p-1.5 rounded-lg bg-[#2D261A] hover:bg-[#3D3322] text-[#DFC377] transition-colors text-[10px] flex items-center gap-1 shrink-0 ml-2"
-                  title="Copy email"
-                >
-                  <Copy className="w-3 h-3" />
-                  {copyFeedback === 'Ops Email' ? 'Copied' : 'Copy'}
-                </button>
-              </div>
-            </div>
-
-            {/* Standard Access Key / Password */}
-            <div className="p-3.5 bg-[#1B1915] border border-[#3E382E] rounded-xl flex items-center justify-between">
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-amber-200/60 font-semibold">
-                  Administrator Access Key / Password
-                </div>
-                <div className="font-mono text-sm font-bold text-[#E7CF9B] mt-0.5 flex items-center gap-2">
-                  <span>Admin2026!</span>
-                  <span className="text-[10px] font-normal text-emerald-400 bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-800/40">
-                    Active & Verified
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handleCopy('Admin2026!', 'Password')}
-                  className="px-2.5 py-1.5 rounded-lg bg-[#2D261A] hover:bg-[#3D3322] text-[#DFC377] transition-colors text-xs flex items-center gap-1"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  {copyFeedback === 'Password' ? 'Copied' : 'Copy Key'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPassword('Admin2026!');
-                    setCopyFeedback('Filled');
-                    setTimeout(() => setCopyFeedback(null), 1500);
-                  }}
-                  className="px-2.5 py-1.5 rounded-lg bg-[#C59A45]/20 hover:bg-[#C59A45]/30 text-[#F5E4B5] border border-[#C59A45]/40 transition-colors text-xs font-semibold"
-                >
-                  {copyFeedback === 'Filled' ? 'Filled ✓' : 'Use Key'}
-                </button>
-              </div>
-            </div>
-
-            {/* Permissions Summary Granted Upon Approval */}
-            <div className="pt-2 border-t border-[#2A241A]">
-              <div className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-2">
-                Capabilities Granted Upon Entry Approval
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-300">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Real-time inventory & pricing</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Firestore order dispatcher</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Tracking numbers & carriers</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Customer registry & notes</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Delivery zones & tariffs</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Promotional coupon codes</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Database & Security Banner */}
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#12110F] border border-[#2A241A] text-[11px] text-gray-400">
-              <Database className="w-3.5 h-3.5 text-[#C59A45] shrink-0" />
-              <span>
-                Connected to <strong className="text-gray-200">Firebase Firestore Cloud Database</strong> with Role-Based Security Rules.
-              </span>
-            </div>
-          </div>
-
-          {/* RIGHT COLUMN: Pre-Approval Verification & Sign-In Form */}
-          <div className="lg:col-span-6 bg-[#1C1A17] border border-[#C59A45]/40 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
-            
-            {/* Header Badge */}
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#C59A45]/15 border border-[#C59A45]/40 text-[#DFC377] text-xs font-semibold uppercase tracking-wider mb-3">
-                <UserCheck className="w-3.5 h-3.5" />
-                <span>Pre-Approval Verification</span>
-              </div>
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#F5E4B5]">
-                Admin Sign-In & Entry Approval
+              <h2 className="text-xl font-serif font-bold text-[#F5E4B5]">
+                Administrator Sign In
               </h2>
-              <p className="text-xs text-gray-400 mt-1">
-                Verify credentials below before approving access into the administrator dashboard.
+              <p className="text-xs text-gray-400">
+                Restricted access portal for authorized store administrators. Please enter your credentials to access the store management system.
               </p>
             </div>
 
-            {/* Dynamic Pre-Approval Status Box */}
-            <div className={`p-3.5 rounded-xl border transition-all ${
-              isEmailAuthorized
-                ? 'bg-emerald-950/25 border-emerald-600/40 text-emerald-200'
-                : 'bg-amber-950/25 border-amber-600/40 text-amber-200'
-            }`}>
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 font-medium">
-                  {isEmailAuthorized ? (
-                    <>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      <span>Authorized Admin Account:</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertTriangle className="w-4 h-4 text-amber-400" />
-                      <span>Account Verification:</span>
-                    </>
-                  )}
-                  <span className="font-mono font-bold text-white text-xs truncate max-w-[190px]">
-                    {email || 'None selected'}
-                  </span>
-                </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${
-                  isEmailAuthorized
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                    : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                }`}>
-                  {isEmailAuthorized ? 'Approved' : 'Verify'}
-                </span>
-              </div>
-              <div className="text-[11px] text-gray-300 mt-1.5">
-                {isEmailAuthorized
-                  ? 'Email matches whitelisted administrators in firestore.rules and adminAuthService.'
-                  : 'Please select one of the authorized administrator accounts on the left.'}
-              </div>
-            </div>
+
+
+
 
             {/* Error Message if any */}
             {loginError && (
@@ -871,14 +626,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     className="w-full bg-[#12110F] border border-[#3E382E] rounded-xl pl-4 pr-10 py-3 text-sm text-white focus:outline-none focus:border-[#C59A45] transition-colors"
-                    placeholder="admin@ridhalventures.com"
+                    placeholder="admin@example.com"
                   />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    {isEmailAuthorized ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    ) : (
-                      <Mail className="w-4 h-4 text-gray-500" />
-                    )}
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                    <Mail className="w-4 h-4" />
                   </div>
                 </div>
               </div>
@@ -930,21 +681,6 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                       <span>Approve Credentials & Enter Admin</span>
                     </>
                   )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail('admin@ridhalventures.com');
-                    setPassword('Admin2026!');
-                    setLoginError('');
-                    setCopyFeedback('Filled Master');
-                    setTimeout(() => setCopyFeedback(null), 1500);
-                  }}
-                  className="w-full py-2.5 bg-[#25221C] hover:bg-[#2F2B24] border border-[#453D30] text-[#E7CF9B] font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-2"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-[#C59A45]" />
-                  <span>{copyFeedback === 'Filled Master' ? 'Master Details Loaded ✓' : 'Auto-Fill Master Administrator Credentials'}</span>
                 </button>
               </div>
             </form>
@@ -1922,25 +1658,25 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-2">
+                  <label className="py-2.5 px-3 bg-[#C59A45]/20 hover:bg-[#C59A45]/30 border border-[#C59A45] rounded-xl text-[#C59A45] font-semibold text-xs cursor-pointer flex items-center justify-center gap-2 transition-colors whitespace-nowrap">
+                    {isUploadingImage ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                    Upload from Device
+                    <input type="file" accept="image/*" multiple onChange={handleImageFileUpload} className="hidden" />
+                  </label>
                   <input
                     type="text"
-                    placeholder="Paste image URL (https://...)"
+                    placeholder="Or paste image URL (https://...)"
                     value={prodImageInput}
                     onChange={e => setProdImageInput(e.target.value)}
-                    className="flex-1 bg-[#12110E] border border-[#3E382E] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#C59A45]"
+                    className="flex-1 bg-[#12110E] border border-[#3E382E] rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-[#C59A45]"
                   />
                   <button
                     type="button"
                     onClick={handleAddImageUrl}
-                    className="px-3 py-2 bg-[#25221C] border border-[#3E382E] rounded-xl text-amber-200 hover:border-[#C59A45]"
+                    className="px-3 py-2 bg-[#25221C] border border-[#3E382E] rounded-xl text-amber-200 text-xs hover:border-[#C59A45]"
                   >
                     Add URL
                   </button>
-                  <label className="px-3 py-2 bg-[#C59A45]/20 border border-[#C59A45] rounded-xl text-[#C59A45] cursor-pointer hover:bg-[#C59A45]/30 flex items-center justify-center gap-1.5 whitespace-nowrap">
-                    {isUploadingImage ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
-                    Upload File
-                    <input type="file" accept="image/*" onChange={handleImageFileUpload} className="hidden" />
-                  </label>
                 </div>
               </div>
 
@@ -2037,15 +1773,58 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               </div>
 
               <div>
-                <label className="block uppercase tracking-wider text-gray-400 mb-1 text-[10px] font-semibold">
-                  Category Banner Image URL
+                <label className="block uppercase tracking-wider text-gray-400 mb-1.5 text-[10px] font-semibold">
+                  Category Banner Image
                 </label>
-                <input
-                  type="text"
-                  value={catImage}
-                  onChange={e => setCatImage(e.target.value)}
-                  className="w-full bg-[#12110E] border border-[#3E382E] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#C59A45]"
-                />
+
+                {catImage && (
+                  <div className="relative mb-2.5 w-full h-28 rounded-xl overflow-hidden border border-[#3E382E] bg-[#12110E]">
+                    <img
+                      src={catImage}
+                      alt="Category preview"
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setCatImage('')}
+                      className="absolute top-2 right-2 p-1 bg-red-600/90 text-white rounded-lg hover:bg-red-700 transition-colors shadow"
+                      title="Remove image"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <label className="flex-1 py-2.5 px-3 bg-[#C59A45]/20 hover:bg-[#C59A45]/30 border border-[#C59A45] rounded-xl text-[#C59A45] font-semibold text-xs cursor-pointer flex items-center justify-center gap-2 transition-colors">
+                    {isUploadingCatImage ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Uploading from Device...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload Directly from Device</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCategoryImageFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="Or paste image URL"
+                    value={catImage}
+                    onChange={e => setCatImage(e.target.value)}
+                    className="flex-1 bg-[#12110E] border border-[#3E382E] rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-[#C59A45]"
+                  />
+                </div>
               </div>
 
               <div>
