@@ -732,23 +732,23 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       )}
 
       {/* Admin Header */}
-      <header className="bg-[#181613] border-b border-[#2D281F] sticky top-0 z-40 px-6 py-3.5 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full bg-[#C59A45]/20 border border-[#C59A45] flex items-center justify-center text-[#C59A45]">
-              <Shield className="w-5 h-5" />
+      <header className="bg-[#181613] border-b border-[#2D281F] sticky top-0 z-40 px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#C59A45]/20 border border-[#C59A45] flex items-center justify-center text-[#C59A45] shrink-0">
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h1 className="font-serif font-bold text-sm text-[#F5E4B5] tracking-wider leading-none">
+              <h1 className="font-serif font-bold text-xs sm:text-sm text-[#F5E4B5] tracking-wider leading-none">
                 RIDHAL VENTURES
               </h1>
-              <span className="text-[10px] text-amber-200/50 uppercase tracking-widest">
+              <span className="text-[9px] sm:text-[10px] text-amber-200/50 uppercase tracking-widest block mt-0.5">
                 Admin Control Room
               </span>
             </div>
           </div>
 
-          {/* Quick Tabs */}
+          {/* Quick Tabs on Desktop */}
           <nav className="hidden md:flex items-center gap-1 ml-6 border-l border-[#2D281F] pl-6">
             <button
               onClick={() => setActiveTab('overview')}
@@ -828,32 +828,115 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           </nav>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           <button
             onClick={loadAllData}
             title="Refresh database"
-            className="p-2 text-gray-400 hover:text-[#C59A45] rounded-lg hover:bg-[#25221C] transition-colors"
+            className="p-1.5 sm:p-2 text-gray-400 hover:text-[#C59A45] rounded-lg hover:bg-[#25221C] transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
           <button
             onClick={exitToStore}
-            className="text-xs px-3 py-1.5 border border-[#3E382E] rounded-lg text-amber-200/80 hover:border-[#C59A45] transition-colors flex items-center gap-1.5"
+            className="text-[11px] sm:text-xs px-2 sm:px-3 py-1.5 border border-[#3E382E] rounded-lg text-amber-200/80 hover:border-[#C59A45] transition-colors flex items-center gap-1 sm:gap-1.5"
           >
-            <Eye className="w-3.5 h-3.5" /> View Store
+            <Eye className="w-3.5 h-3.5" />
+            <span>Store</span>
           </button>
           <button
             onClick={handleLogout}
             title="Log out"
-            className="text-xs px-3 py-1.5 bg-red-950/40 border border-red-900/50 rounded-lg text-red-300 hover:bg-red-900/60 transition-colors flex items-center gap-1"
+            className="text-[11px] sm:text-xs px-2 sm:px-3 py-1.5 bg-red-950/40 border border-red-900/50 rounded-lg text-red-300 hover:bg-red-900/60 transition-colors flex items-center gap-1"
           >
-            <LogOut className="w-3.5 h-3.5" /> Sign Out
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Exit</span>
           </button>
         </div>
       </header>
 
+      {/* Mobile Subheader Navigation Bar (Ensures all admin tabs show on all mobile devices) */}
+      <div className="md:hidden sticky top-[49px] sm:top-[57px] z-30 bg-[#14120E] border-b border-[#2D281F] px-3 py-2 overflow-x-auto no-scrollbar shadow-lg">
+        <nav className="flex items-center gap-1.5 min-w-max">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              activeTab === 'overview' 
+                ? 'bg-[#C59A45] text-black font-bold shadow-sm' 
+                : 'text-gray-300 hover:text-white bg-[#1E1B16] border border-[#2D281F]'
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            onClick={() => setActiveTab('products')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
+              activeTab === 'products' 
+                ? 'bg-[#C59A45] text-black font-bold shadow-sm' 
+                : 'text-gray-300 hover:text-white bg-[#1E1B16] border border-[#2D281F]'
+            }`}
+          >
+            Products ({products.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('categories')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
+              activeTab === 'categories' 
+                ? 'bg-[#C59A45] text-black font-bold shadow-sm' 
+                : 'text-gray-300 hover:text-white bg-[#1E1B16] border border-[#2D281F]'
+            }`}
+          >
+            Categories ({categories.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
+              activeTab === 'orders' 
+                ? 'bg-[#C59A45] text-black font-bold shadow-sm' 
+                : 'text-gray-300 hover:text-white bg-[#1E1B16] border border-[#2D281F]'
+            }`}
+          >
+            Orders ({orders.length})
+            {pendingOrdersCount > 0 && (
+              <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('customers')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
+              activeTab === 'customers' 
+                ? 'bg-[#C59A45] text-black font-bold shadow-sm' 
+                : 'text-gray-300 hover:text-white bg-[#1E1B16] border border-[#2D281F]'
+            }`}
+          >
+            Customers ({customers.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('delivery')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
+              activeTab === 'delivery' 
+                ? 'bg-[#C59A45] text-black font-bold shadow-sm' 
+                : 'text-gray-300 hover:text-white bg-[#1E1B16] border border-[#2D281F]'
+            }`}
+          >
+            <Truck className="w-3.5 h-3.5" />
+            Delivery
+          </button>
+          <button
+            onClick={() => setActiveTab('coupons')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
+              activeTab === 'coupons' 
+                ? 'bg-[#C59A45] text-black font-bold shadow-sm' 
+                : 'text-gray-300 hover:text-white bg-[#1E1B16] border border-[#2D281F]'
+            }`}
+          >
+            <Tag className="w-3.5 h-3.5" />
+            Coupons
+          </button>
+        </nav>
+      </div>
+
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6">
         {/* OVERVIEW TAB */}
         {activeTab === 'overview' && (
           <div className="space-y-6">
@@ -862,74 +945,74 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 <h2 className="text-xl font-bold font-serif text-[#F5E4B5]">Executive Dashboard</h2>
                 <p className="text-xs text-gray-400">Real-time inventory and sales operations for Ridhal Ventures</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={handleOpenAddProduct}
-                  className="px-4 py-2 bg-[#C59A45] text-black font-bold text-xs uppercase tracking-wider rounded-xl hover:opacity-90 flex items-center gap-1.5"
+                  className="px-3 sm:px-4 py-2 bg-[#C59A45] text-black font-bold text-xs uppercase tracking-wider rounded-xl hover:opacity-90 flex items-center gap-1.5"
                 >
                   <Plus className="w-4 h-4" /> Add Product
                 </button>
                 <button
                   onClick={handleOpenAddCategory}
-                  className="px-4 py-2 bg-[#25221C] border border-[#3E382E] text-amber-200 font-bold text-xs uppercase tracking-wider rounded-xl hover:border-[#C59A45] flex items-center gap-1.5"
+                  className="px-3 sm:px-4 py-2 bg-[#25221C] border border-[#3E382E] text-amber-200 font-bold text-xs uppercase tracking-wider rounded-xl hover:border-[#C59A45] flex items-center gap-1.5"
                 >
                   <Layers className="w-4 h-4" /> New Category
                 </button>
               </div>
             </div>
 
-            {/* Metrics Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-[#181613] border border-[#2D281F] rounded-2xl p-5">
-                <div className="flex items-center justify-between text-gray-400 mb-2">
-                  <span className="text-xs uppercase tracking-wider font-semibold">Total Sales</span>
-                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
-                    <DollarSign className="w-4 h-4" />
+            {/* Metrics Cards: 2x2 on mobile, 4 columns on desktop */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+              <div className="bg-[#181613] border border-[#2D281F] rounded-2xl p-3.5 sm:p-5">
+                <div className="flex items-center justify-between text-gray-400 mb-1.5 sm:mb-2">
+                  <span className="text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Total Sales</span>
+                  <div className="p-1.5 sm:p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+                    <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                 </div>
-                <div className="text-2xl font-bold text-white font-serif">
+                <div className="text-base sm:text-2xl font-bold text-white font-serif truncate">
                   {formatNaira(totalSales)}
                 </div>
-                <p className="text-[11px] text-gray-500 mt-1">Confirmed paid orders</p>
+                <p className="text-[10px] sm:text-[11px] text-gray-500 mt-1">Confirmed paid</p>
               </div>
 
-              <div className="bg-[#181613] border border-[#2D281F] rounded-2xl p-5">
-                <div className="flex items-center justify-between text-gray-400 mb-2">
-                  <span className="text-xs uppercase tracking-wider font-semibold">Total Orders</span>
-                  <div className="p-2 rounded-xl bg-[#C59A45]/10 text-[#C59A45]">
-                    <ShoppingBag className="w-4 h-4" />
+              <div className="bg-[#181613] border border-[#2D281F] rounded-2xl p-3.5 sm:p-5">
+                <div className="flex items-center justify-between text-gray-400 mb-1.5 sm:mb-2">
+                  <span className="text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Total Orders</span>
+                  <div className="p-1.5 sm:p-2 rounded-xl bg-[#C59A45]/10 text-[#C59A45]">
+                    <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                 </div>
-                <div className="text-2xl font-bold text-white font-serif">
+                <div className="text-base sm:text-2xl font-bold text-white font-serif">
                   {orders.length}
                 </div>
-                <p className="text-[11px] text-gray-500 mt-1">Lifetime customer orders</p>
+                <p className="text-[10px] sm:text-[11px] text-gray-500 mt-1">Customer orders</p>
               </div>
 
-              <div className="bg-[#181613] border border-[#2D281F] rounded-2xl p-5">
-                <div className="flex items-center justify-between text-gray-400 mb-2">
-                  <span className="text-xs uppercase tracking-wider font-semibold">Pending Orders</span>
-                  <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
-                    <Clock className="w-4 h-4" />
+              <div className="bg-[#181613] border border-[#2D281F] rounded-2xl p-3.5 sm:p-5">
+                <div className="flex items-center justify-between text-gray-400 mb-1.5 sm:mb-2">
+                  <span className="text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Pending</span>
+                  <div className="p-1.5 sm:p-2 rounded-xl bg-amber-500/10 text-amber-400">
+                    <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                 </div>
-                <div className="text-2xl font-bold text-white font-serif">
+                <div className="text-base sm:text-2xl font-bold text-white font-serif">
                   {pendingOrdersCount}
                 </div>
-                <p className="text-[11px] text-gray-500 mt-1">Requires processing or shipping</p>
+                <p className="text-[10px] sm:text-[11px] text-gray-500 mt-1">Requires fulfillment</p>
               </div>
 
-              <div className="bg-[#181613] border border-[#2D281F] rounded-2xl p-5">
-                <div className="flex items-center justify-between text-gray-400 mb-2">
-                  <span className="text-xs uppercase tracking-wider font-semibold">Completed Orders</span>
-                  <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400">
-                    <CheckCircle2 className="w-4 h-4" />
+              <div className="bg-[#181613] border border-[#2D281F] rounded-2xl p-3.5 sm:p-5">
+                <div className="flex items-center justify-between text-gray-400 mb-1.5 sm:mb-2">
+                  <span className="text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Completed</span>
+                  <div className="p-1.5 sm:p-2 rounded-xl bg-blue-500/10 text-blue-400">
+                    <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                 </div>
-                <div className="text-2xl font-bold text-white font-serif">
+                <div className="text-base sm:text-2xl font-bold text-white font-serif">
                   {completedOrdersCount}
                 </div>
-                <p className="text-[11px] text-gray-500 mt-1">Delivered to customers</p>
+                <p className="text-[10px] sm:text-[11px] text-gray-500 mt-1">Delivered to buyers</p>
               </div>
             </div>
 
@@ -1093,117 +1176,227 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 No products match your search filter.
               </div>
             ) : (
-              <div className="bg-[#181613] border border-[#2D281F] rounded-2xl overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-[#12110E] border-b border-[#2D281F] text-gray-400 uppercase tracking-wider text-[10px]">
-                      <tr>
-                        <th className="py-3 px-4">Item</th>
-                        <th className="py-3 px-4">Category</th>
-                        <th className="py-3 px-4">Price</th>
-                        <th className="py-3 px-4">Stock</th>
-                        <th className="py-3 px-4">Featured</th>
-                        <th className="py-3 px-4 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#24201A]">
-                      {filteredProducts.map(p => (
-                        <tr key={p.id} className="hover:bg-[#1C1A16] transition-colors">
-                          <td className="py-3 px-4">
-                            <div className="flex items-center gap-3">
-                              <img
-                                src={p.images?.[0] || 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=150'}
-                                alt={p.name}
-                                referrerPolicy="no-referrer"
-                                className="w-11 h-11 rounded-lg object-cover bg-black border border-[#2D281F]"
-                              />
-                              <div>
-                                <p className="font-semibold text-white truncate max-w-xs">{p.name}</p>
-                                <span className="text-[10px] text-gray-500 font-mono">ID: {p.id}</span>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-3 px-4 text-amber-200/80">
-                            {p.category}
-                          </td>
-                          <td className="py-3 px-4 font-mono font-bold text-white">
-                            {formatNaira(p.price)}
-                            {p.compareAtPrice && (
-                              <span className="block text-[10px] text-gray-500 line-through">
-                                {formatNaira(p.compareAtPrice)}
-                              </span>
-                            )}
-                          </td>
-                          <td className="py-3 px-4">
-                            {quickStockId === p.id ? (
-                              <div className="flex items-center gap-1">
-                                <input
-                                  type="number"
-                                  min="0"
-                                  value={quickStockValue}
-                                  onChange={e => setQuickStockValue(Number(e.target.value))}
-                                  className="w-16 bg-[#12110E] border border-[#C59A45] rounded px-2 py-1 text-xs text-white"
-                                />
-                                <button
-                                  onClick={() => handleQuickStockSave(p.id)}
-                                  className="p-1 bg-emerald-600 text-white rounded hover:bg-emerald-500"
-                                >
-                                  <Check className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                  onClick={() => setQuickStockId(null)}
-                                  className="p-1 bg-gray-700 text-white rounded hover:bg-gray-600"
-                                >
-                                  <X className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => {
-                                  setQuickStockId(p.id);
-                                  setQuickStockValue(p.stock);
-                                }}
-                                className={`px-2.5 py-1 rounded text-[11px] font-mono font-bold flex items-center gap-1.5 ${
-                                  p.stock <= 3 
-                                    ? 'bg-red-950/60 text-red-300 border border-red-900/50' 
-                                    : 'bg-[#25221C] text-amber-200 border border-[#3E382E]'
-                                }`}
-                              >
-                                {p.stock} in stock <Edit className="w-2.5 h-2.5 opacity-60" />
-                              </button>
-                            )}
-                          </td>
-                          <td className="py-3 px-4">
+              <div>
+                {/* Mobile Products Card List (Shows all details on phones & mobile devices) */}
+                <div className="md:hidden space-y-3">
+                  {filteredProducts.map(p => (
+                    <div key={p.id} className="bg-[#181613] border border-[#2D281F] rounded-2xl p-3.5 space-y-3">
+                      <div className="flex items-start gap-3">
+                        <img
+                          src={p.images?.[0] || 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=150'}
+                          alt={p.name}
+                          referrerPolicy="no-referrer"
+                          className="w-14 h-14 rounded-xl object-cover bg-black border border-[#2D281F] shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-1">
+                            <h4 className="font-semibold text-white text-xs leading-snug line-clamp-2">{p.name}</h4>
                             {p.featured ? (
-                              <span className="px-2 py-0.5 rounded-full bg-[#C59A45]/20 text-[#C59A45] text-[10px] font-bold">
+                              <span className="px-2 py-0.5 rounded-full bg-[#C59A45]/20 text-[#C59A45] text-[9px] font-bold shrink-0">
                                 Featured
                               </span>
                             ) : (
-                              <span className="text-gray-500 text-[10px]">Standard</span>
+                              <span className="text-gray-500 text-[9px] shrink-0">Standard</span>
                             )}
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
+                          </div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[10px] text-amber-200/90 font-medium px-2 py-0.5 rounded bg-[#25221C] border border-[#3E382E]">
+                              {p.category}
+                            </span>
+                            <span className="text-[10px] text-gray-500 font-mono">ID: {p.id}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Pricing and Stock Stepper */}
+                      <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#24201A]">
+                        <div>
+                          <span className="text-[10px] text-gray-400 block">Unit Price</span>
+                          <div className="font-mono font-bold text-sm text-white">
+                            {formatNaira(p.price)}
+                            {p.compareAtPrice && (
+                              <span className="ml-1.5 text-[10px] text-gray-500 line-through">
+                                {formatNaira(p.compareAtPrice)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Quick Stock Controls */}
+                        <div>
+                          <span className="text-[10px] text-gray-400 block text-right">Inventory Stock</span>
+                          {quickStockId === p.id ? (
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <input
+                                type="number"
+                                min="0"
+                                value={quickStockValue}
+                                onChange={e => setQuickStockValue(Number(e.target.value))}
+                                className="w-16 bg-[#12110E] border border-[#C59A45] rounded px-2 py-1 text-xs text-white"
+                              />
                               <button
-                                onClick={() => handleOpenEditProduct(p)}
-                                title="Edit product"
-                                className="p-1.5 text-gray-400 hover:text-[#C59A45] hover:bg-[#25221C] rounded-lg transition-colors"
+                                onClick={() => handleQuickStockSave(p.id)}
+                                className="p-1.5 bg-emerald-600 text-white rounded hover:bg-emerald-500"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Check className="w-3.5 h-3.5" />
                               </button>
                               <button
-                                onClick={() => handleDeleteProduct(p.id, p.name)}
-                                title="Delete product"
-                                className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-950/40 rounded-lg transition-colors"
+                                onClick={() => setQuickStockId(null)}
+                                className="p-1.5 bg-gray-700 text-white rounded hover:bg-gray-600"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <X className="w-3.5 h-3.5" />
                               </button>
                             </div>
-                          </td>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setQuickStockId(p.id);
+                                setQuickStockValue(p.stock);
+                              }}
+                              className={`px-2.5 py-1 mt-0.5 rounded text-[11px] font-mono font-bold flex items-center gap-1.5 ${
+                                p.stock <= 3 
+                                  ? 'bg-red-950/60 text-red-300 border border-red-900/50' 
+                                  : 'bg-[#25221C] text-amber-200 border border-[#3E382E]'
+                              }`}
+                            >
+                              {p.stock} units <Edit className="w-2.5 h-2.5 opacity-60" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Action buttons on mobile */}
+                      <div className="flex items-center gap-2 pt-2 border-t border-[#24201A]">
+                        <button
+                          onClick={() => handleOpenEditProduct(p)}
+                          className="flex-1 py-1.5 bg-[#25221C] border border-[#3E382E] text-amber-200 hover:border-[#C59A45] rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
+                        >
+                          <Edit className="w-3.5 h-3.5" /> Edit Product
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(p.id, p.name)}
+                          className="px-3 py-1.5 bg-red-950/40 border border-red-900/50 text-red-300 hover:bg-red-900/60 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop & Tablet Products Table */}
+                <div className="hidden md:block bg-[#181613] border border-[#2D281F] rounded-2xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-[700px] w-full text-left text-xs">
+                      <thead className="bg-[#12110E] border-b border-[#2D281F] text-gray-400 uppercase tracking-wider text-[10px]">
+                        <tr>
+                          <th className="py-3 px-4">Item</th>
+                          <th className="py-3 px-4">Category</th>
+                          <th className="py-3 px-4">Price</th>
+                          <th className="py-3 px-4">Stock</th>
+                          <th className="py-3 px-4">Featured</th>
+                          <th className="py-3 px-4 text-right">Actions</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-[#24201A]">
+                        {filteredProducts.map(p => (
+                          <tr key={p.id} className="hover:bg-[#1C1A16] transition-colors">
+                            <td className="py-3 px-4">
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={p.images?.[0] || 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=150'}
+                                  alt={p.name}
+                                  referrerPolicy="no-referrer"
+                                  className="w-11 h-11 rounded-lg object-cover bg-black border border-[#2D281F]"
+                                />
+                                <div>
+                                  <p className="font-semibold text-white truncate max-w-xs">{p.name}</p>
+                                  <span className="text-[10px] text-gray-500 font-mono">ID: {p.id}</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 text-amber-200/80">
+                              {p.category}
+                            </td>
+                            <td className="py-3 px-4 font-mono font-bold text-white">
+                              {formatNaira(p.price)}
+                              {p.compareAtPrice && (
+                                <span className="block text-[10px] text-gray-500 line-through">
+                                  {formatNaira(p.compareAtPrice)}
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4">
+                              {quickStockId === p.id ? (
+                                <div className="flex items-center gap-1">
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    value={quickStockValue}
+                                    onChange={e => setQuickStockValue(Number(e.target.value))}
+                                    className="w-16 bg-[#12110E] border border-[#C59A45] rounded px-2 py-1 text-xs text-white"
+                                  />
+                                  <button
+                                    onClick={() => handleQuickStockSave(p.id)}
+                                    className="p-1 bg-emerald-600 text-white rounded hover:bg-emerald-500"
+                                  >
+                                    <Check className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    onClick={() => setQuickStockId(null)}
+                                    className="p-1 bg-gray-700 text-white rounded hover:bg-gray-600"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    setQuickStockId(p.id);
+                                    setQuickStockValue(p.stock);
+                                  }}
+                                  className={`px-2.5 py-1 rounded text-[11px] font-mono font-bold flex items-center gap-1.5 ${
+                                    p.stock <= 3 
+                                      ? 'bg-red-950/60 text-red-300 border border-red-900/50' 
+                                      : 'bg-[#25221C] text-amber-200 border border-[#3E382E]'
+                                  }`}
+                                >
+                                  {p.stock} in stock <Edit className="w-2.5 h-2.5 opacity-60" />
+                                </button>
+                              )}
+                            </td>
+                            <td className="py-3 px-4">
+                              {p.featured ? (
+                                <span className="px-2 py-0.5 rounded-full bg-[#C59A45]/20 text-[#C59A45] text-[10px] font-bold">
+                                  Featured
+                                </span>
+                              ) : (
+                                <span className="text-gray-500 text-[10px]">Standard</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  onClick={() => handleOpenEditProduct(p)}
+                                  title="Edit product"
+                                  className="p-1.5 text-gray-400 hover:text-[#C59A45] hover:bg-[#25221C] rounded-lg transition-colors"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteProduct(p.id, p.name)}
+                                  title="Delete product"
+                                  className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-950/40 rounded-lg transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}
@@ -1355,105 +1548,214 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 </p>
               </div>
             ) : (
-              <div className="bg-[#181613] border border-[#2D281F] rounded-2xl overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-[#12110E] border-b border-[#2D281F] text-gray-400 uppercase tracking-wider text-[10px]">
-                      <tr>
-                        <th className="py-3 px-4">Order ID</th>
-                        <th className="py-3 px-4">Customer</th>
-                        <th className="py-3 px-4">Destination</th>
-                        <th className="py-3 px-4">Items</th>
-                        <th className="py-3 px-4">Total</th>
-                        <th className="py-3 px-4">Order Status</th>
-                        <th className="py-3 px-4">Payment</th>
-                        <th className="py-3 px-4">Email Alert</th>
-                        <th className="py-3 px-4 text-right">Details</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#24201A]">
-                      {filteredOrders.map(o => (
-                        <tr key={o.id} className="hover:bg-[#1C1A16] transition-colors">
-                          <td className="py-3 px-4 font-mono font-bold text-amber-300">
-                            {o.id}
-                          </td>
-                          <td className="py-3 px-4">
-                            <p className="font-semibold text-white">{o.customerDetails?.fullName || 'Customer'}</p>
-                            <span className="text-[10px] text-gray-500 font-mono">{o.customerDetails?.phone}</span>
-                          </td>
-                          <td className="py-3 px-4 text-gray-300">
-                            {o.customerDetails?.city}, {o.customerDetails?.state}
-                          </td>
-                          <td className="py-3 px-4 font-mono text-gray-400">
+              <div>
+                {/* Mobile Orders Card List (Shows all details on phones & mobile devices) */}
+                <div className="md:hidden space-y-3">
+                  {filteredOrders.map(o => (
+                    <div key={o.id} className="bg-[#181613] border border-[#2D281F] rounded-2xl p-4 space-y-3">
+                      {/* Top Row: Order ID, Items count, Inspect button */}
+                      <div className="flex items-center justify-between gap-2 pb-2 border-b border-[#24201A]">
+                        <div>
+                          <span className="text-[10px] text-gray-500 uppercase tracking-wider block">Order ID</span>
+                          <span className="font-mono font-bold text-xs text-amber-300">{o.id}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#25221C] text-gray-300 border border-[#3E382E]">
                             {o.items?.length || 0} items
-                          </td>
-                          <td className="py-3 px-4 font-mono font-bold text-white">
-                            {formatNaira(o.total)}
-                          </td>
-                          <td className="py-3 px-4">
-                            <select
-                              value={o.orderStatus || 'Pending'}
-                              onChange={e => handleUpdateOrderStatus(o.id, e.target.value as OrderStatus)}
-                              className="bg-[#12110E] border border-[#3E382E] rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none focus:border-[#C59A45]"
+                          </span>
+                          <button
+                            onClick={() => setSelectedOrderDetails(o)}
+                            className="px-2.5 py-1 rounded bg-[#25221C] border border-[#C59A45]/60 text-amber-200 hover:bg-[#C59A45] hover:text-black transition-colors text-xs font-medium"
+                          >
+                            Inspect
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Customer & Destination */}
+                      <div className="space-y-1 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-white">{o.customerDetails?.fullName || 'Customer'}</span>
+                          <span className="text-gray-400 font-mono text-[11px]">{o.customerDetails?.phone}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-gray-400 text-[11px]">
+                          <MapPin className="w-3.5 h-3.5 text-[#C59A45] shrink-0" />
+                          <span className="truncate">{o.customerDetails?.city}, {o.customerDetails?.state}</span>
+                        </div>
+                      </div>
+
+                      {/* Amount and Email Alert Row */}
+                      <div className="flex items-center justify-between pt-2 border-t border-[#24201A]">
+                        <div>
+                          <span className="text-[10px] text-gray-400 block">Total Amount</span>
+                          <span className="font-mono font-bold text-base text-white">{formatNaira(o.total)}</span>
+                        </div>
+
+                        <div>
+                          <span className="text-[10px] text-gray-400 block text-right">Email Notification</span>
+                          {o.notificationStatus?.sent ? (
+                            <span 
+                              className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium bg-emerald-950/60 text-emerald-300 border border-emerald-800/60 mt-0.5"
+                              title={`Delivered to alhajabizventure@gmail.com via ${o.notificationStatus.provider || 'email provider'}`}
                             >
-                              <option value="Pending">Pending</option>
-                              <option value="Processing">Processing</option>
-                              <option value="Shipped">Shipped</option>
-                              <option value="Delivered">Delivered</option>
-                              <option value="Cancelled">Cancelled</option>
-                            </select>
-                          </td>
-                          <td className="py-3 px-4">
-                            <select
-                              value={o.paymentStatus || 'Pending'}
-                              onChange={e => handleUpdatePaymentStatus(o.id, e.target.value as PaymentStatus)}
-                              className={`rounded-lg px-2 py-1 text-[11px] font-semibold border ${
-                                o.paymentStatus === 'Paid' 
-                                  ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' 
-                                  : 'bg-amber-950/60 text-amber-300 border-amber-800'
-                              }`}
-                            >
-                              <option value="Pending">Pending</option>
-                              <option value="Paid">Paid</option>
-                              <option value="Failed">Failed</option>
-                            </select>
-                          </td>
-                          <td className="py-3 px-4">
-                            {o.notificationStatus?.sent ? (
-                              <span 
-                                className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium bg-emerald-950/60 text-emerald-300 border border-emerald-800/60"
-                                title={`Delivered to alhajabizventure@gmail.com via ${o.notificationStatus.provider || 'email provider'}`}
-                              >
-                                <Check className="w-2.5 h-2.5" /> Sent
-                              </span>
-                            ) : (
-                              <button
-                                onClick={() => handleTriggerNotification(o)}
-                                disabled={isSendingNotification === o.id}
-                                className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium bg-amber-950/60 text-amber-300 border border-amber-800/60 hover:bg-amber-900 transition-colors"
-                                title="Attempt real email delivery to alhajabizventure@gmail.com"
-                              >
-                                {isSendingNotification === o.id ? (
-                                  <RefreshCw className="w-2.5 h-2.5 animate-spin" />
-                                ) : (
-                                  <Mail className="w-2.5 h-2.5" />
-                                )}
-                                Send Alert
-                              </button>
-                            )}
-                          </td>
-                          <td className="py-3 px-4 text-right">
+                              <Check className="w-2.5 h-2.5" /> Sent
+                            </span>
+                          ) : (
                             <button
-                              onClick={() => setSelectedOrderDetails(o)}
-                              className="px-2.5 py-1 rounded bg-[#25221C] border border-[#3E382E] text-amber-200 hover:border-[#C59A45] transition-colors text-[11px]"
+                              onClick={() => handleTriggerNotification(o)}
+                              disabled={isSendingNotification === o.id}
+                              className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium bg-amber-950/60 text-amber-300 border border-amber-800/60 hover:bg-amber-900 transition-colors mt-0.5"
+                              title="Attempt real email delivery to alhajabizventure@gmail.com"
                             >
-                              Inspect
+                              {isSendingNotification === o.id ? (
+                                <RefreshCw className="w-2.5 h-2.5 animate-spin" />
+                              ) : (
+                                <Mail className="w-2.5 h-2.5" />
+                              )}
+                              Send Alert
                             </button>
-                          </td>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Interactive Status Controls on mobile */}
+                      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#24201A]">
+                        <div>
+                          <label className="block text-[10px] text-gray-400 mb-1">Order Status</label>
+                          <select
+                            value={o.orderStatus || 'Pending'}
+                            onChange={e => handleUpdateOrderStatus(o.id, e.target.value as OrderStatus)}
+                            className="w-full bg-[#12110E] border border-[#3E382E] rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#C59A45]"
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-gray-400 mb-1">Payment Status</label>
+                          <select
+                            value={o.paymentStatus || 'Pending'}
+                            onChange={e => handleUpdatePaymentStatus(o.id, e.target.value as PaymentStatus)}
+                            className={`w-full rounded-lg px-2 py-1.5 text-xs font-semibold border ${
+                              o.paymentStatus === 'Paid' 
+                                ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' 
+                                : 'bg-amber-950/60 text-amber-300 border-amber-800'
+                            }`}
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Failed">Failed</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop & Tablet Orders Table */}
+                <div className="hidden md:block bg-[#181613] border border-[#2D281F] rounded-2xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-[850px] w-full text-left text-xs">
+                      <thead className="bg-[#12110E] border-b border-[#2D281F] text-gray-400 uppercase tracking-wider text-[10px]">
+                        <tr>
+                          <th className="py-3 px-4">Order ID</th>
+                          <th className="py-3 px-4">Customer</th>
+                          <th className="py-3 px-4">Destination</th>
+                          <th className="py-3 px-4">Items</th>
+                          <th className="py-3 px-4">Total</th>
+                          <th className="py-3 px-4">Order Status</th>
+                          <th className="py-3 px-4">Payment</th>
+                          <th className="py-3 px-4">Email Alert</th>
+                          <th className="py-3 px-4 text-right">Details</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-[#24201A]">
+                        {filteredOrders.map(o => (
+                          <tr key={o.id} className="hover:bg-[#1C1A16] transition-colors">
+                            <td className="py-3 px-4 font-mono font-bold text-amber-300">
+                              {o.id}
+                            </td>
+                            <td className="py-3 px-4">
+                              <p className="font-semibold text-white">{o.customerDetails?.fullName || 'Customer'}</p>
+                              <span className="text-[10px] text-gray-500 font-mono">{o.customerDetails?.phone}</span>
+                            </td>
+                            <td className="py-3 px-4 text-gray-300">
+                              {o.customerDetails?.city}, {o.customerDetails?.state}
+                            </td>
+                            <td className="py-3 px-4 font-mono text-gray-400">
+                              {o.items?.length || 0} items
+                            </td>
+                            <td className="py-3 px-4 font-mono font-bold text-white">
+                              {formatNaira(o.total)}
+                            </td>
+                            <td className="py-3 px-4">
+                              <select
+                                value={o.orderStatus || 'Pending'}
+                                onChange={e => handleUpdateOrderStatus(o.id, e.target.value as OrderStatus)}
+                                className="bg-[#12110E] border border-[#3E382E] rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none focus:border-[#C59A45]"
+                              >
+                                <option value="Pending">Pending</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                              </select>
+                            </td>
+                            <td className="py-3 px-4">
+                              <select
+                                value={o.paymentStatus || 'Pending'}
+                                onChange={e => handleUpdatePaymentStatus(o.id, e.target.value as PaymentStatus)}
+                                className={`rounded-lg px-2 py-1 text-[11px] font-semibold border ${
+                                  o.paymentStatus === 'Paid' 
+                                    ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' 
+                                    : 'bg-amber-950/60 text-amber-300 border-amber-800'
+                                }`}
+                              >
+                                <option value="Pending">Pending</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Failed">Failed</option>
+                              </select>
+                            </td>
+                            <td className="py-3 px-4">
+                              {o.notificationStatus?.sent ? (
+                                <span 
+                                  className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium bg-emerald-950/60 text-emerald-300 border border-emerald-800/60"
+                                  title={`Delivered to alhajabizventure@gmail.com via ${o.notificationStatus.provider || 'email provider'}`}
+                                >
+                                  <Check className="w-2.5 h-2.5" /> Sent
+                                </span>
+                              ) : (
+                                <button
+                                  onClick={() => handleTriggerNotification(o)}
+                                  disabled={isSendingNotification === o.id}
+                                  className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium bg-amber-950/60 text-amber-300 border border-amber-800/60 hover:bg-amber-900 transition-colors"
+                                  title="Attempt real email delivery to alhajabizventure@gmail.com"
+                                >
+                                  {isSendingNotification === o.id ? (
+                                    <RefreshCw className="w-2.5 h-2.5 animate-spin" />
+                                  ) : (
+                                    <Mail className="w-2.5 h-2.5" />
+                                  )}
+                                  Send Alert
+                                </button>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              <button
+                                onClick={() => setSelectedOrderDetails(o)}
+                                className="px-2.5 py-1 rounded bg-[#25221C] border border-[#3E382E] text-amber-200 hover:border-[#C59A45] transition-colors text-[11px]"
+                              >
+                                Inspect
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}
@@ -1479,47 +1781,94 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 </p>
               </div>
             ) : (
-              <div className="bg-[#181613] border border-[#2D281F] rounded-2xl overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-[#12110E] border-b border-[#2D281F] text-gray-400 uppercase tracking-wider text-[10px]">
-                      <tr>
-                        <th className="py-3 px-4">Customer</th>
-                        <th className="py-3 px-4">Contact</th>
-                        <th className="py-3 px-4">Primary Address</th>
-                        <th className="py-3 px-4">Orders Placed</th>
-                        <th className="py-3 px-4">Registered</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#24201A]">
-                      {customers.map(c => {
-                        const customerOrders = orders.filter(
-                          o => o.customerId === c.id || o.customerDetails?.phone === c.phone || o.customerDetails?.email === c.email
-                        );
-                        const addr = c.addresses?.[0];
-                        return (
-                          <tr key={c.id} className="hover:bg-[#1C1A16] transition-colors">
-                            <td className="py-3 px-4 font-semibold text-white">
-                              {c.name}
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="text-gray-300">{c.phone}</div>
-                              <span className="text-[10px] text-gray-500">{c.email}</span>
-                            </td>
-                            <td className="py-3 px-4 text-gray-300">
-                              {addr ? `${addr.address}, ${addr.city}, ${addr.state}` : 'None saved'}
-                            </td>
-                            <td className="py-3 px-4 font-mono font-bold text-[#C59A45]">
-                              {customerOrders.length} orders
-                            </td>
-                            <td className="py-3 px-4 text-gray-500 text-[10px]">
-                              {new Date(c.createdAt).toLocaleDateString()}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+              <div>
+                {/* Mobile Customers Card List (Shows all details on phones & mobile devices) */}
+                <div className="md:hidden space-y-3">
+                  {customers.map(c => {
+                    const customerOrders = orders.filter(
+                      o => o.customerId === c.id || o.customerDetails?.phone === c.phone || o.customerDetails?.email === c.email
+                    );
+                    const addr = c.addresses?.[0];
+                    return (
+                      <div key={c.id} className="bg-[#181613] border border-[#2D281F] rounded-2xl p-4 space-y-2.5">
+                        <div className="flex items-center justify-between gap-2 pb-2 border-b border-[#24201A]">
+                          <span className="font-semibold text-white text-xs">{c.name}</span>
+                          <span className="text-[10px] text-gray-500">
+                            Registered: {new Date(c.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+
+                        <div className="space-y-1.5 text-xs">
+                          <div className="flex items-center gap-2 text-gray-300">
+                            <Phone className="w-3.5 h-3.5 text-[#C59A45] shrink-0" />
+                            <span className="font-mono text-[11px]">{c.phone || 'No phone'}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-400">
+                            <Mail className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                            <span className="text-[11px] truncate">{c.email || 'No email'}</span>
+                          </div>
+                          <div className="flex items-start gap-2 text-gray-300 pt-1">
+                            <MapPin className="w-3.5 h-3.5 text-[#C59A45] shrink-0 mt-0.5" />
+                            <span className="text-[11px]">
+                              {addr ? `${addr.address}, ${addr.city}, ${addr.state}` : 'No address saved'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="pt-2 border-t border-[#24201A] flex items-center justify-between">
+                          <span className="text-[10px] text-gray-400">Activity</span>
+                          <span className="px-2.5 py-0.5 rounded-full bg-[#C59A45]/20 text-[#C59A45] font-mono font-bold text-xs border border-[#C59A45]/30">
+                            {customerOrders.length} {customerOrders.length === 1 ? 'order' : 'orders'} placed
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Desktop & Tablet Customers Table */}
+                <div className="hidden md:block bg-[#181613] border border-[#2D281F] rounded-2xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-[650px] w-full text-left text-xs">
+                      <thead className="bg-[#12110E] border-b border-[#2D281F] text-gray-400 uppercase tracking-wider text-[10px]">
+                        <tr>
+                          <th className="py-3 px-4">Customer</th>
+                          <th className="py-3 px-4">Contact</th>
+                          <th className="py-3 px-4">Primary Address</th>
+                          <th className="py-3 px-4">Orders Placed</th>
+                          <th className="py-3 px-4">Registered</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#24201A]">
+                        {customers.map(c => {
+                          const customerOrders = orders.filter(
+                            o => o.customerId === c.id || o.customerDetails?.phone === c.phone || o.customerDetails?.email === c.email
+                          );
+                          const addr = c.addresses?.[0];
+                          return (
+                            <tr key={c.id} className="hover:bg-[#1C1A16] transition-colors">
+                              <td className="py-3 px-4 font-semibold text-white">
+                                {c.name}
+                              </td>
+                              <td className="py-3 px-4">
+                                <div className="text-gray-300">{c.phone}</div>
+                                <span className="text-[10px] text-gray-500">{c.email}</span>
+                              </td>
+                              <td className="py-3 px-4 text-gray-300">
+                                {addr ? `${addr.address}, ${addr.city}, ${addr.state}` : 'None saved'}
+                              </td>
+                              <td className="py-3 px-4 font-mono font-bold text-[#C59A45]">
+                                {customerOrders.length} orders
+                              </td>
+                              <td className="py-3 px-4 text-gray-500 text-[10px]">
+                                {new Date(c.createdAt).toLocaleDateString()}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}
